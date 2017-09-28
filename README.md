@@ -17,11 +17,15 @@ Following example show how to use it with Selenium.
 ```js
 "use strict";
 const assert = require('assert');
-const {Builder, By, Key, until, promise} = require('selenium-webdriver');
+const {Builder} = require('selenium-webdriver');
 const test = require('selenium-webdriver/testing');
 
 const jsc = require('jsverify');
 const jscCommands = require('jsverify-commands');
+
+// loading user defined commands
+const CommandNoArgs = require('./commands/CommandNoArgs');
+const CommandRandomNat = require('./commands/CommandRandomNat');
 
 test.describe('Basic Example', function() {
     test.beforeEach(async function() {
@@ -53,6 +57,25 @@ test.describe('Basic Example', function() {
            .catch(error => done(error));
     });
 });
+```
+
+With `commands/CommandNoArgs.js` defined as follow:
+
+```js
+function CommandNoArgs() {
+    this.check = function(model) {
+        // @return boolean stating whether or not run can be called
+        //         knowing the current state of the model
+        return true; //can run
+    };
+    this.run = function(driver, model) {
+        // impact model and state (alias driver in the case of Selenium)
+        // @return a Promise[boolean] stating whether or not the run failed
+        //         true  = we should continue with next commands
+        //         false = the command just failed
+        return Promise.resolve(true); //success
+    };
+}
 ```
 
 ## Example
