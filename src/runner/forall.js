@@ -31,6 +31,6 @@ var forallCommandsSeeded = (arbSeed,
                             teardown = async () => { return; }) => forAllCommandsHelper(arbSeed, arbCommands, warmup, teardown);
 
 module.exports = {
-    forallCommands: (...params) => forallCommandsSeeded.apply(this, [jsc.constant(undefined)].concat(params)),
+    forall: (...params) => forallCommandsSeeded.apply(this, [jsc.constant(undefined)].concat(params)),
     forallCommandsSeeded: forallCommandsSeeded
 };

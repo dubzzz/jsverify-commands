@@ -1,13 +1,13 @@
 "use strict";
 const {command} = require('./arbitrary/command.js');
 const {commands, numCommands, filter} = require('./arbitrary/commands.js');
-const {forallCommands, forallCommandsSeeded} = require('./runner/forall.js');
+const {forall, forallCommandsSeeded} = require('./runner/forall.js');
 
 module.exports = {
     command: command,
     commands: commands,
-    numCommands: numCommands,
+    numCommands: numCommands, //depreciated
     filter: filter,
-    forallCommands: forallCommands,
-    forallCommandsSeeded: forallCommandsSeeded
+    forall: forall,
+    forallCommandsSeeded: forallCommandsSeeded //depreciated
 };
