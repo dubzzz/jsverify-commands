@@ -12,7 +12,7 @@ Checking on commands can prove very useful to check user interfaces, state machi
 
 Basically one test is defined as a set of commands. Each command has to define two methods:
 - `check(model): boolean` which takes a model as entry and return whether or not the command should be executed (based on the current state of this model)
-- `run(state, model): Promise(boolean)` which evolves both the `model` and the `state` and check for potential assertions
+- `run(state, model): Promise(boolean) or boolean` which evolves both the `model` and the `state` and check for potential assertions
 
 ### Test definition
 
@@ -39,7 +39,7 @@ jscCommands.commands(
 In order to run the tests in Mocha + Selenium, you can use the following code:
 
 ```js
-jsc.assert(jscCommands.forallCommands(commands, warmup, teardown))
+jsc.assert(jscCommands.forall(commands, warmup, teardown))
     .then(val => val ? done(val) : done())
     .catch(error => done(error));
 ```
