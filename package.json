@@ -1,0 +1,25 @@
+{
+  "name": "jsverify-commands",
+  "version": "0.1.0",
+  "description": "Bring commands to JSVerify",
+  "main": "src/jscCommands.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dubzzz/jsverify-commands.git"
+  },
+  "author": "Nicolas DUBIEN <github@dubien.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dubzzz/jsverify-commands/issues"
+  },
+  "homepage": "https://github.com/dubzzz/jsverify-commands#readme",
+  "dependencies": {
+    "jsverify": "^0.8.3"
+  },
+  "devDependencies": {
+    "mocha": "^3.5.3"
+  }
+}
