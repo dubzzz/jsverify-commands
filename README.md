@@ -76,6 +76,8 @@ function CommandNoArgs() {
         return Promise.resolve(true); //success
     };
 }
+
+module.exports = CommandNoArgs;
 ```
 
 ## Example
