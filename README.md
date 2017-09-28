@@ -1,4 +1,4 @@
-# JSVerify Commands
+# JSVerify Commands [![Build Status](https://travis-ci.org/dubzzz/jsverify-commands.svg?branch=master)](https://travis-ci.org/dubzzz/jsverify-commands)
 
 ## Introduction
 
