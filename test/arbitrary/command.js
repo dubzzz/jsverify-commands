@@ -8,32 +8,32 @@ function MyEmptyClass(...params) {
     this.params = params;
 };
 
+const knownArbs = {
+    "bool" : {
+        arb: jsc.bool,
+        check: v => v === true || v === false
+    },
+    "nat"  : {
+        arb: jsc.nat,
+        check: v => typeof(v) === 'number'
+    },
+    "oneof": {
+        arb: jsc.oneof(jsc.constant(5), jsc.constant(42)),
+        check: v => v === 5 || v === 42
+    },
+    "array": {
+        arb: jsc.array(jsc.nat),
+        check: v => Array.isArray(v) && v.find(i => typeof(i) !== 'number') === undefined
+    },
+};
+const allowedArbs = jsc.oneof.apply(this, Object.keys(knownArbs).map(v => jsc.constant(v)));
+
+var buildCommandFor = function(CommandType, arbsName) {
+    return command.apply(this, [CommandType].concat(arbsName.map(v => knownArbs[v].arb)));
+};
+
 describe('command', function() {
     describe('generator', function() {
-        const knownArbs = {
-            "bool" : {
-                arb: jsc.bool,
-                check: v => v === true || v === false
-            },
-            "nat"  : {
-                arb: jsc.nat,
-                check: v => typeof(v) === 'number'
-            },
-            "oneof": {
-                arb: jsc.oneof(jsc.constant(5), jsc.constant(42)),
-                check: v => v === 5 || v === 42
-            },
-            "array": {
-                arb: jsc.array(jsc.nat),
-                check: v => Array.isArray(v) && v.find(i => typeof(i) !== 'number') === undefined
-            },
-        };
-        const allowedArbs = jsc.oneof.apply(this, Object.keys(knownArbs).map(v => jsc.constant(v)));
-
-        var buildCommandFor = function(CommandType, arbsName) {
-            return command.apply(this, [CommandType].concat(arbsName.map(v => knownArbs[v].arb)));
-        };
-        
         it('should instantiate an object from the given class', function() {
             jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
                 const arb = buildCommandFor(MyEmptyClass, arbsName);
