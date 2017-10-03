@@ -10,51 +10,59 @@ function MyEmptyClass(...params) {
 
 describe('command', function() {
     describe('generator', function() {
+        const knownArbs = {
+            "bool" : {
+                arb: jsc.bool,
+                check: v => v === true || v === false
+            },
+            "nat"  : {
+                arb: jsc.nat,
+                check: v => typeof(v) === 'number'
+            },
+            "oneof": {
+                arb: jsc.oneof(jsc.constant(5), jsc.constant(42)),
+                check: v => v === 5 || v === 42
+            },
+            "array": {
+                arb: jsc.array(jsc.nat),
+                check: v => Array.isArray(v) && v.find(i => typeof(i) !== 'number') === undefined
+            },
+        };
+        const allowedArbs = jsc.oneof.apply(this, Object.keys(knownArbs).map(v => jsc.constant(v)));
+
+        var buildCommandFor = function(CommandType, arbsName) {
+            return command.apply(this, [CommandType].concat(arbsName.map(v => knownArbs[v].arb)));
+        };
+        
         it('should instantiate an object from the given class', function() {
-            const arb = command(MyEmptyClass);
-            var v = arb.generator(GENSIZE);
-            assert.ok(v.command instanceof MyEmptyClass, 'command instance of MyEmptyClass');
-            assert.ok(Array.isArray(v.parameters), 'parameters is an array');
-            assert.equal(v.parameters.length, 0, 'parameters array is empty');
+            jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
+                var v = arb.generator(GENSIZE);
+                return v.command instanceof MyEmptyClass;
+            }));
+        });
+        
+        it('should call constructor with the right number of parameters', function() {
+            jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
+                var v = arb.generator(GENSIZE);
+                return v.command.params.length === arbsName.length;
+            }));
+        });
+                
+        it('should call constructor with the right types', function() {
+            jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
+                var v = arb.generator(GENSIZE);
+                return v.command.params.find((e, i) => !knownArbs[arbsName[i]].check(e)) === undefined;
+            }));
         });
 
-        it('should instantiate using asked parameter types', function() {
-            const knownArbs = {
-                "bool" : {
-                    arb: jsc.bool,
-                    check: v => v === true || v === false
-                },
-                "nat"  : {
-                    arb: jsc.nat,
-                    check: v => typeof(v) === 'number'
-                },
-                "oneof": {
-                    arb: jsc.oneof(jsc.constant(5), jsc.constant(42)),
-                    check: v => v === 5 || v === 42
-                },
-                "array": {
-                    arb: jsc.array(jsc.nat),
-                    check: v => Array.isArray(v) && v.find(i => typeof(i) !== 'number') === undefined
-                },
-            };
-            const allowedArbs = jsc.oneof.apply(this, Object.keys(knownArbs).map(v => jsc.constant(v)));
-
+        it('should keep track of parameters', function() {
             jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
-                const arb = command.apply(this, [MyEmptyClass].concat(arbsName.map(v => knownArbs[v].arb)));
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
                 var v = arb.generator(GENSIZE);
-                var success = true;
-
-                success = success && v.command instanceof MyEmptyClass;
-                success = success && Array.isArray(v.parameters);
-                success = success && v.parameters.length === arbsName.length;
-                success = success && v.command.params.length === arbsName.length;
-
-                for (var idx = 0 ; idx !== arbsName.length ; ++idx) {
-                    success = success && knownArbs[arbsName[idx]].check(v.parameters[idx]);
-                    success = success && v.parameters[idx] == v.command.params[idx];
-                }
-
-                return success;
+                return v.parameters.map((e, i) => [e, v.command.params[i]]).find(d => d[0] != d[1]) === undefined;
             }));
         });
     });
