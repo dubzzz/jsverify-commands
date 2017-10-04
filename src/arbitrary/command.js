@@ -1,5 +1,17 @@
 "use strict";
 const jsc = require('jsverify');
+const lazyseq = require("lazy-seq");
+
+var arbNullTuple = function(arbsArray) {
+    if (arbsArray.length === 0) {
+        return jsc.bless({
+            generator: size => [],
+            shrink: lazyseq.nil,
+            show: t => "empty"
+        });
+    }
+    return jsc.tuple(arbsArray);
+};
 
 var arbCommand = function(TypeName, ...arbs) {
     var Builder = function(parameters) {
@@ -7,24 +19,18 @@ var arbCommand = function(TypeName, ...arbs) {
     }
     Builder.prototype = TypeName.prototype;
 
+    var build = function(parameters) {
+        return {
+            command: new Builder(parameters),
+            parameters: parameters
+        };
+    };
+
+    var arbParameters = arbNullTuple(arbs);
     return jsc.bless({
-        generator: function(size) {
-            var parameters = arbs.length === 0 ? [] : jsc.tuple(arbs).generator(size);
-            return {
-                command: new Builder(parameters),
-                parameters: parameters
-            };
-        },
-        shrink: function(cmd) {
-            var parameters = arbs.length === 0 ? [] : jsc.tuple(arbs).shrink(cmd.parameters);
-            return {
-                command: new Builder(parameters),
-                parameters: parameters
-            };
-        },
-        show: function(cmd) {
-            return cmd.command.toString();
-        }
+        generator: size => build(arbParameters.generator(size)),
+        shrink: cmd => arbParameters.shrink(cmd.parameters).map(build),
+        show: cmd => cmd.command.toString()
     });
 };
 
