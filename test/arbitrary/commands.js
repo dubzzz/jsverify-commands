@@ -16,9 +16,9 @@ var fakeJscCommand = function(ClassType) {
 var fakeClass = function() {
     return function() {};
 };
-var FakeSuccessCommand = function() {};
-var FakeFailureCommand = function() {};
-var FakeDoNotRunCommand = function() {};
+var FakeSuccessCommand = function(id) { this.id = id; };
+var FakeFailureCommand = function(id) { this.id = id; };
+var FakeDoNotRunCommand = function(id) { this.id = id; };
 
 describe('commands', function() {
     describe('generator', function() {
@@ -46,7 +46,7 @@ describe('commands', function() {
         const classes = [FakeSuccessCommand, FakeDoNotRunCommand, FakeFailureCommand];
         const oneOfClasses = jsc.oneof(classes.map(c => jsc.constant({Cls: c, name: c.name})));
         var fakeCommandsAfterRun = function(classesToGenerate) {
-            var fakeGenerated = classesToGenerate.map(c => new Object({command: new c.Cls(), parameters: [], name: c.name}));
+            var fakeGenerated = classesToGenerate.map((c, idx) => new Object({command: new c.Cls(idx), parameters: [], name: c.name}));
             for (var idx = 0 ; idx != fakeGenerated.length ; ++idx) {
                 var c = fakeGenerated[idx].command;
                 c.hasStarted = !(c instanceof FakeDoNotRunCommand);
@@ -88,11 +88,21 @@ describe('commands', function() {
             }));
         });
         
-        /*it('should not reorder commands', function() {
-            jsc.assert(jsc.forall(jsc.array(jsc.oneof(classes)), function(classesToGenerate) {
-                //TODO
+        it('should not reorder commands', function() {
+            jsc.assert(jsc.forall(jsc.array(oneOfClasses), function(classesToGenerate) {
+                const arbs = classes.map(fakeJscCommand);
+                const arb = commands.apply(this, arbs);
+                const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
+                return arb.shrink(fakeGenerated).every(a => {
+                    for (var idx = 1 ; idx < a.length ; ++idx) {
+                        if (a[idx-1].command.id >= a[idx].command.id) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
             }));
-        });*/
+        });
         
         it('should remove hasStarted flags', function() {
             jsc.assert(jsc.forall(jsc.array(oneOfClasses), function(classesToGenerate) {
