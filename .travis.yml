@@ -8,3 +8,4 @@ cache:
 
 script:
   - npm run examples/array
+  - npm run test
