@@ -1,6 +1,12 @@
 "use strict";
 const jsc = require('jsverify');
 
+var cloneObject = function(o) {
+    var cloned = {};
+    Object.keys(o).filter(v => v != "hasStarted").forEach(k => cloned[k] = o[k]);
+    return cloned;
+};
+
 var jscCommandsArray = function(gen, maxSize) {
     /**
      * jsc.array uses logsize function as a limiter of its size...
@@ -19,7 +25,8 @@ var jscCommandsArray = function(gen, maxSize) {
             }
             return arr;
         },
-        shrink: jsc.array(gen).shrink,
+        shrink: (arr) => jsc.array(gen).shrink(arr.filter(c => c.hasStarted === true))
+                .map(narr => narr.map(cloneObject)),
         show: jsc.array(gen).show
     });
 };
