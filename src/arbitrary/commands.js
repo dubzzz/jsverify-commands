@@ -31,41 +31,12 @@ var jscCommandsArray = function(gen, maxSize) {
     });
 };
 
-var arbNumCommands = function(num, ...commands) {
-    return jscCommandsArray(
-        jsc.oneof.apply(this, commands),
-        num || 100);
-};
-
 var arbCommands = function(...commands) {
-    return arbNumCommands.apply(this, [undefined].concat(commands));
-};
-
-var arbFilter = function(arb, modelBuilder) {
-    return jsc.bless({
-        generator: (size) => {
-            var arr = arb.generator(size);
-            var model = modelBuilder();
-            for (var i = 0; i != arr.length; ++i) {
-                if (arr[i].command.check(model)) {
-                    if (arr[i].command.smokeRun === undefined) {
-                        break;
-                    }
-                    arr[i].command.smokeRun(model);
-                }
-                else {
-                    arr[i] = undefined;
-                }
-            }
-            return arr.filter(c => c !== undefined);
-        },
-        shrink: arb.shrink,
-        show: arb.show
-    });
+    return typeof(commands[0]) === 'number'
+        ? jscCommandsArray(jsc.oneof.apply(this, commands.slice(1)), commands[0])
+        : jscCommandsArray(jsc.oneof.apply(this, commands), 100);
 };
 
 module.exports = {
-    commands: arbCommands,
-    numCommands: arbNumCommands,
-    filter: arbFilter
+    commands: arbCommands
 };

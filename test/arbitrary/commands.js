@@ -32,6 +32,16 @@ describe('commands', function() {
             }));
         });
 
+        it('should instantiate an array with size restriction', function() {
+            jsc.assert(jsc.forall(jsc.integer(1, 1024), jsc.integer(1, 1024), function(size, num) {
+                const classes = [...Array(num).keys()].map(fakeClass);
+                const arbs = classes.map(fakeJscCommand);
+                const arb = commands.apply(this, [size].concat(arbs));
+                var v = arb.generator(GENSIZE);
+                return Array.isArray(v) && v.length <= size;
+            }));
+        });
+
         it('should instantiate command elements', function() {
             jsc.assert(jsc.forall(jsc.integer(1, 1024), function(num) {
                 const classes = [...Array(num).keys()].map(fakeClass);
