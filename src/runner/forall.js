@@ -5,6 +5,7 @@ var runall = async function(actions, state, model) {
     for (var idx = 0 ; idx != actions.length ; ++idx) {
         var ac = actions[idx];
         if (ac.check(model)) {
+            ac.hasStarted = true;
             if (! await ac.run(state, model)) {
                 console.error("Test failed @ step #" + idx + " on task " + ac);
                 return false;
