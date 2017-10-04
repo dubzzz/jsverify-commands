@@ -59,7 +59,7 @@ describe('commands', function() {
             var fakeGenerated = classesToGenerate.map((c, idx) => new Object({command: new c.Cls(idx), parameters: [], name: c.name}));
             for (var idx = 0 ; idx != fakeGenerated.length ; ++idx) {
                 var c = fakeGenerated[idx].command;
-                c.hasStarted = !(c instanceof FakeDoNotRunCommand);
+                fakeGenerated[idx].hasStarted = !(c instanceof FakeDoNotRunCommand);
                 if (c instanceof FakeFailureCommand) {
                     break;
                 }
