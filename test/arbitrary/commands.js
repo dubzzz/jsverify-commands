@@ -88,6 +88,15 @@ describe('commands', function() {
             }));
         });
         
+        it('should suggest shrinks', function() {
+            jsc.assert(jsc.forall(jsc.integer(2, 1024), function(num) {
+                const arb = commands(fakeJscCommand(FakeSuccessCommand));
+                const classesToGenerate = [...Array(num).keys()].map(() => new Object({Cls: FakeSuccessCommand, name: ''}));
+                const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
+                return arb.shrink(fakeGenerated).length() > 0;
+            }));
+        });
+        
         it('should replay less commands', function() {
             jsc.assert(jsc.forall(jsc.array(oneOfClasses), function(classesToGenerate) {
                 const arbs = classes.map(fakeJscCommand);
@@ -104,7 +113,9 @@ describe('commands', function() {
                 const arb = commands.apply(this, arbs);
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
                 return arb.shrink(fakeGenerated).every(a => {
+                    console.log(a);
                     for (var idx = 1 ; idx < a.length ; ++idx) {
+                        console.log(JSON.stringify(a[idx]));
                         if (a[idx-1].command.id >= a[idx].command.id) {
                             return false;
                         }
