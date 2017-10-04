@@ -33,12 +33,12 @@ var buildCommandFor = function(CommandType, arbsName) {
 };
 
 var areRightTypes = function(params, arbsName) {
-    return params.find((e, i) => !knownArbs[arbsName[i]].check(e)) === undefined;
+    return params.every((e, i) => knownArbs[arbsName[i]].check(e));
 };
 
 var areSameParams = function(params1, params2) {
     return params1.length === params2.length
-        && params1.map((e, i) => [e, params2[i]]).find(d => d[0] != d[1]) === undefined;
+        && params1.every((e, i) => e === params2[i]);
 };
 
 describe('command', function() {
