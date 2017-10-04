@@ -29,7 +29,7 @@ describe('commands', function() {
             }));
         });
 
-        it('should instantiate multiple command', function() {
+        it('should instantiate command elements', function() {
             jsc.assert(jsc.forall(jsc.integer(1, 1024), function(num) {
                 const classes = [...Array(num).keys()].map(fakeClass);
                 const arbs = classes.map(fakeJscCommand);
