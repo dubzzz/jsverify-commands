@@ -32,6 +32,15 @@ var buildCommandFor = function(CommandType, arbsName) {
     return command.apply(this, [CommandType].concat(arbsName.map(v => knownArbs[v].arb)));
 };
 
+var areRightTypes = function(params, arbsName) {
+    return params.find((e, i) => !knownArbs[arbsName[i]].check(e)) === undefined;
+};
+
+var areSameParams = function(params1, params2) {
+    return params1.length === params2.length
+        && params1.map((e, i) => [e, params2[i]]).find(d => d[0] != d[1]) === undefined;
+};
+
 describe('command', function() {
     describe('generator', function() {
         it('should instantiate an object from the given class', function() {
@@ -54,7 +63,7 @@ describe('command', function() {
             jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
                 const arb = buildCommandFor(MyEmptyClass, arbsName);
                 var v = arb.generator(GENSIZE);
-                return v.command.params.find((e, i) => !knownArbs[arbsName[i]].check(e)) === undefined;
+                return areRightTypes(v.command.params, arbsName);
             }));
         });
 
@@ -62,7 +71,40 @@ describe('command', function() {
             jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
                 const arb = buildCommandFor(MyEmptyClass, arbsName);
                 var v = arb.generator(GENSIZE);
-                return v.parameters.map((e, i) => [e, v.command.params[i]]).find(d => d[0] != d[1]) === undefined;
+                return areSameParams(v.parameters, v.command.params);
+            }));
+        });
+    });
+    describe('shrink', function() {
+        it('should instantiate objects from the given class', function() {
+            jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
+                var generated = arb.generator(GENSIZE);
+                return arb.shrink(generated).every(v => v.command instanceof MyEmptyClass);
+            }));
+        });
+
+        it('should call constructor with the right number of parameters', function() {
+            jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
+                var generated = arb.generator(GENSIZE);
+                return arb.shrink(generated).every(v => v.command.params.length === arbsName.length);
+            }));
+        });
+        
+        it('should call constructor with the right types', function() {
+            jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
+                var generated = arb.generator(GENSIZE);
+                return arb.shrink(generated).every(v => areRightTypes(v.command.params, arbsName));
+            }));
+        });
+
+        it('should keep track of parameters', function() {
+            jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
+                var generated = arb.generator(GENSIZE);
+                return arb.shrink(generated).every(v => areSameParams(v.parameters, v.command.params));
             }));
         });
     });
