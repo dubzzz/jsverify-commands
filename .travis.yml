@@ -7,5 +7,7 @@ cache:
     - "node_modules"
 
 script:
+  - npm install -g increase-memory-limit
+  - ./increase-memory-limit
   - npm run examples/array
   - npm run test
