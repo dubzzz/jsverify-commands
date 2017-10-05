@@ -9,4 +9,4 @@ cache:
 script:
   - npm run examples/array
   - npm run test
-  - cat .npm/_logs/*.log
+  - cat /home/travis/.npm/_logs/*.log
