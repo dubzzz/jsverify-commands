@@ -84,7 +84,7 @@ describe('commands', function() {
                     }
                     return arr.slice(0, -1).every(c => c.command instanceof FakeSuccessCommand);
                 };
-                return arb.shrink(fakeGenerated).every(onlyPlayedCommands);
+                return arb.shrink(fakeGenerated).take(100).every(onlyPlayedCommands);
             }));
         });
         
@@ -103,7 +103,7 @@ describe('commands', function() {
                 const arb = commands.apply(this, arbs);
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
                 const numStarted = fakeGenerated.filter(c => c.hasStarted === true).length;
-                return arb.shrink(fakeGenerated).every(a => a.length <= numStarted);
+                return arb.shrink(fakeGenerated).take(100).every(a => a.length <= numStarted);
             }));
         });
         
@@ -112,7 +112,7 @@ describe('commands', function() {
                 const arbs = classes.map(fakeJscCommand);
                 const arb = commands.apply(this, arbs);
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
-                return arb.shrink(fakeGenerated).every(a => {
+                return arb.shrink(fakeGenerated).take(100).every(a => {
                     console.log(a);
                     for (var idx = 1 ; idx < a.length ; ++idx) {
                         console.log(JSON.stringify(a[idx]));
