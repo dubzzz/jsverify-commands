@@ -15,7 +15,6 @@ var runall = async function(actions, state, model) {
 };
 
 var forallImpl = function(arbSeed, arbCommands, warmup, teardown) {
-    var testNumber = 0;
     return jsc.forall(arbSeed, arbCommands, async function(seed, commands) {
         var actions = commands.map(c => c.command);
         var {state, model} = await warmup(seed);
