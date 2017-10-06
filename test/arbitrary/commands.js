@@ -5,6 +5,10 @@ const lazyseq = require("lazy-seq");
 
 const {commands} = require('../../src/arbitrary/commands');
 
+const MAX_NUM_COMMANDS = 1024; // max. number of commands to use during tests
+const MAX_GEN_SIZE = 1024; // max. size of generated array
+const MAX_ARRAY_FOR_SHRINK = 100; // max. size for an array to be used in shrink context
+
 const GENSIZE = 10;
 var fakeJscCommand = function(ClassType) {
     return jsc.bless({
@@ -23,7 +27,7 @@ var FakeDoNotRunCommand = function(id) { this.id = id; };
 describe('commands', function() {
     describe('generator', function() {
         it('should instantiate an array', function() {
-            jsc.assert(jsc.forall(jsc.integer(1, 1024), function(num) {
+            jsc.assert(jsc.forall(jsc.integer(1, MAX_NUM_COMMANDS), function(num) {
                 const classes = [...Array(num).keys()].map(fakeClass);
                 const arbs = classes.map(fakeJscCommand);
                 const arb = commands.apply(this, arbs);
@@ -33,7 +37,7 @@ describe('commands', function() {
         });
 
         it('should instantiate an array with size restriction', function() {
-            jsc.assert(jsc.forall(jsc.integer(1, 1024), jsc.integer(1, 1024), function(size, num) {
+            jsc.assert(jsc.forall(jsc.integer(0, MAX_GEN_SIZE), jsc.integer(1, MAX_NUM_COMMANDS), function(size, num) {
                 const classes = [...Array(num).keys()].map(fakeClass);
                 const arbs = classes.map(fakeJscCommand);
                 const arb = commands.apply(this, [size].concat(arbs));
@@ -43,7 +47,7 @@ describe('commands', function() {
         });
 
         it('should instantiate command elements', function() {
-            jsc.assert(jsc.forall(jsc.integer(1, 1024), function(num) {
+            jsc.assert(jsc.forall(jsc.integer(1, MAX_NUM_COMMANDS), function(num) {
                 const classes = [...Array(num).keys()].map(fakeClass);
                 const arbs = classes.map(fakeJscCommand);
                 const arb = commands.apply(this, arbs);
@@ -89,7 +93,7 @@ describe('commands', function() {
         });
         
         it('should suggest shrinks', function() {
-            jsc.assert(jsc.forall(jsc.integer(2, 100), function(num) {
+            jsc.assert(jsc.forall(jsc.integer(2, MAX_ARRAY_FOR_SHRINK), function(num) {
                 const arb = commands(fakeJscCommand(FakeSuccessCommand));
                 const classesToGenerate = [...Array(num).keys()].map(() => new Object({Cls: FakeSuccessCommand, name: ''}));
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
