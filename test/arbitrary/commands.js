@@ -30,7 +30,7 @@ describe('commands', function() {
             jsc.assert(jsc.forall(jsc.integer(1, MAX_NUM_COMMANDS), function(num) {
                 const classes = [...Array(num).keys()].map(fakeClass);
                 const arbs = classes.map(fakeJscCommand);
-                const arb = commands.apply(this, arbs);
+                const arb = commands(...arbs);
                 var v = arb.generator(GENSIZE);
                 return Array.isArray(v);
             }));
@@ -40,7 +40,7 @@ describe('commands', function() {
             jsc.assert(jsc.forall(jsc.integer(0, MAX_GEN_SIZE), jsc.integer(1, MAX_NUM_COMMANDS), function(size, num) {
                 const classes = [...Array(num).keys()].map(fakeClass);
                 const arbs = classes.map(fakeJscCommand);
-                const arb = commands.apply(this, [size].concat(arbs));
+                const arb = commands(...[size].concat(arbs));
                 var v = arb.generator(GENSIZE);
                 return Array.isArray(v) && v.length <= size;
             }));
@@ -74,7 +74,7 @@ describe('commands', function() {
         it('should replay only played commands', function() {
             jsc.assert(jsc.forall(jsc.array(oneOfClasses), function(classesToGenerate) {
                 const arbs = classes.map(fakeJscCommand);
-                const arb = commands.apply(this, arbs);
+                const arb = commands(...arbs);
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
                 const generatedContainFailures = fakeGenerated.find(c => c.command instanceof FakeFailureCommand) !== undefined;
                 const onlyPlayedCommands = function(arr) {
@@ -104,7 +104,7 @@ describe('commands', function() {
         it('should replay less commands', function() {
             jsc.assert(jsc.forall(jsc.array(oneOfClasses), function(classesToGenerate) {
                 const arbs = classes.map(fakeJscCommand);
-                const arb = commands.apply(this, arbs);
+                const arb = commands(...arbs);
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
                 const numStarted = fakeGenerated.filter(c => c.hasStarted === true).length;
                 return arb.shrink(fakeGenerated).every(a => a.length <= numStarted);
@@ -114,7 +114,7 @@ describe('commands', function() {
         it('should not reorder commands', function() {
             jsc.assert(jsc.forall(jsc.array(oneOfClasses), function(classesToGenerate) {
                 const arbs = classes.map(fakeJscCommand);
-                const arb = commands.apply(this, arbs);
+                const arb = commands(...arbs);
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
                 return arb.shrink(fakeGenerated).every(a => {
                     for (var idx = 1 ; idx < a.length ; ++idx) {
@@ -130,7 +130,7 @@ describe('commands', function() {
         it('should remove hasStarted flags', function() {
             jsc.assert(jsc.forall(jsc.array(oneOfClasses), function(classesToGenerate) {
                 const arbs = classes.map(fakeJscCommand);
-                const arb = commands.apply(this, arbs);
+                const arb = commands(...arbs);
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
                 return arb.shrink(fakeGenerated).every(a => a.every(c => !c.hasOwnProperty('hasStarted')));
             }));

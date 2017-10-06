@@ -33,8 +33,8 @@ var jscCommandsArray = function(gen, maxSize) {
 
 var arbCommands = function(...commands) {
     return typeof(commands[0]) === 'number'
-        ? jscCommandsArray(jsc.oneof.apply(this, commands.slice(1)), commands[0])
-        : jscCommandsArray(jsc.oneof.apply(this, commands), 100);
+        ? jscCommandsArray(jsc.oneof(...commands.slice(1)), commands[0])
+        : jscCommandsArray(jsc.oneof(...commands), 100);
 };
 
 module.exports = {

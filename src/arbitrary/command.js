@@ -14,14 +14,9 @@ var arbNullTuple = function(arbsArray) {
 };
 
 var arbCommand = function(TypeName, ...arbs) {
-    var Builder = function(parameters) {
-        TypeName.apply(this, parameters);
-    }
-    Builder.prototype = TypeName.prototype;
-
     var build = function(parameters) {
         return {
-            command: new Builder(parameters),
+            command: new TypeName(...parameters),
             parameters: parameters
         };
     };

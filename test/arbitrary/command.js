@@ -27,10 +27,10 @@ const knownArbs = {
         check: v => Array.isArray(v) && v.find(i => typeof(i) !== 'number') === undefined
     },
 };
-const allowedArbs = jsc.oneof.apply(this, Object.keys(knownArbs).map(v => jsc.constant(v)));
+const allowedArbs = jsc.oneof(...Object.keys(knownArbs).map(v => jsc.constant(v)));
 
 var buildCommandFor = function(CommandType, arbsName) {
-    return command.apply(this, [CommandType].concat(arbsName.map(v => knownArbs[v].arb)));
+    return command(...[CommandType].concat(arbsName.map(v => knownArbs[v].arb)));
 };
 
 var areRightTypes = function(params, arbsName) {
