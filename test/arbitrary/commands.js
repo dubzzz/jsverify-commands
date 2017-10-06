@@ -93,7 +93,7 @@ describe('commands', function() {
                 const arb = commands(fakeJscCommand(FakeSuccessCommand));
                 const classesToGenerate = [...Array(num).keys()].map(() => new Object({Cls: FakeSuccessCommand, name: ''}));
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
-                return arb.shrink(fakeGenerated).length() > 0;
+                return !arb.shrink(fakeGenerated).isNil;
             }));
         });
         
