@@ -1,3 +1,5 @@
+"use strict";
+
 var runall = async function(actions, state, model) {
     for (var idx = 0 ; idx != actions.length ; ++idx) {
         var ac = actions[idx];
