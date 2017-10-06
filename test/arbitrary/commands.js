@@ -89,7 +89,7 @@ describe('commands', function() {
         });
         
         it('should suggest shrinks', function() {
-            jsc.assert(jsc.forall(jsc.integer(2, 1024), function(num) {
+            jsc.assert(jsc.forall(jsc.integer(2, 100), function(num) {
                 const arb = commands(fakeJscCommand(FakeSuccessCommand));
                 const classesToGenerate = [...Array(num).keys()].map(() => new Object({Cls: FakeSuccessCommand, name: ''}));
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
