@@ -7,7 +7,6 @@ var runall = async function(actions, state, model) {
         if (ac.check(model)) {
             ac.hasStarted = true;
             if (! await ac.run(state, model)) {
-                console.error("Test failed @ step #" + idx + " on task " + ac);
                 return false;
             }
         }
@@ -19,7 +18,6 @@ var forAllCommandsHelper = function(arbSeed, arbCommands, warmup, teardown) {
     var testNumber = 0;
     return jsc.forall(arbSeed, arbCommands, async function(seed, commands) {
         var actions = commands.map(c => c.command);
-        console.log("#" + (++testNumber) + ": " + actions.join(', '));
         var {state, model} = await warmup(seed);
         var result = await runall(actions, state, model);
         await teardown();
