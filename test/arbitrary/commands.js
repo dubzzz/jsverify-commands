@@ -113,9 +113,7 @@ describe('commands', function() {
                 const arb = commands.apply(this, arbs);
                 const fakeGenerated = fakeCommandsAfterRun(classesToGenerate);
                 return arb.shrink(fakeGenerated).take(100).every(a => {
-                    console.log(a);
                     for (var idx = 1 ; idx < a.length ; ++idx) {
-                        console.log(JSON.stringify(a[idx]));
                         if (a[idx-1].command.id >= a[idx].command.id) {
                             return false;
                         }
