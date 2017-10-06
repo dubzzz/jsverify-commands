@@ -6,6 +6,5 @@ const {forall, forallCommandsSeeded} = require('./runner/forall.js');
 module.exports = {
     command: command,
     commands: commands,
-    forall: forall,
-    forallCommandsSeeded: forallCommandsSeeded //depreciated
+    forall: forall
 };

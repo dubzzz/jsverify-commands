@@ -14,7 +14,7 @@ var runall = async function(actions, state, model) {
     return true;
 };
 
-var forAllCommandsHelper = function(arbSeed, arbCommands, warmup, teardown) {
+var forallImpl = function(arbSeed, arbCommands, warmup, teardown) {
     var testNumber = 0;
     return jsc.forall(arbSeed, arbCommands, async function(seed, commands) {
         var actions = commands.map(c => c.command);
@@ -24,12 +24,24 @@ var forAllCommandsHelper = function(arbSeed, arbCommands, warmup, teardown) {
         return result;
     });
 };
-var forallCommandsSeeded = (arbSeed,
-                            arbCommands,
-                            warmup = async (seed) => { return {state: {}, model: {}}; },
-                            teardown = async () => { return; }) => forAllCommandsHelper(arbSeed, arbCommands, warmup, teardown);
+
+var DEFAULT_SEED_GEN = jsc.constant(undefined);
+var DEFAULT_WARMUP = seed => new Object({state: {}, model: {}});
+var DEFAULT_TEARDOWN = () => {};
+
+var isGenerator = function(obj) {
+    return obj !== undefined && obj.generator !== undefined;
+};
+var forall = function(...params) {
+    if (params.length === 0 || ! isGenerator(params[0])) {
+        throw "forall requires at least a commands generator as first argument";
+    }
+    if (! isGenerator(params[1])) {
+        return forallImpl(DEFAULT_SEED_GEN, params[0], params[1] || DEFAULT_WARMUP, params[2] || DEFAULT_TEARDOWN);
+    }
+    return forallImpl(params[0], params[1], params[2] || DEFAULT_WARMUP, params[3] || DEFAULT_TEARDOWN);
+};
 
 module.exports = {
-    forall: (...params) => forallCommandsSeeded(...[jsc.constant(undefined)].concat(params)),
-    forallCommandsSeeded: forallCommandsSeeded
+    forall: forall
 };
