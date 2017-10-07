@@ -15,24 +15,25 @@ const FAILURE = "failure";
 const OneOfStatuses = jsc.oneof(...[SUCCESS, NOT_APPLICABLE, FAILURE].map(jsc.constant));
 
 var callId = 0;
+var WatchAction = function(status, check, run) {
+    this.status = status;
+    this.idCheck = undefined;
+    this.idRun = undefined;
+    this.callCheck = 0;
+    this.callRun = 0;
+    this.check = function(model) {
+        ++this.callCheck;
+        this.checkCheckId = ++callId;
+        return check(model);
+    };
+    this.run = async function(state, model) {
+        ++this.callRun;
+        this.idRun = ++callId;
+        return run(state, model);
+    };
+};
 const buildAction = function(status, checkValue, runValue) {
-    return new (function() {
-        this.status = status;
-        this.idCheck = undefined;
-        this.idRun = undefined;
-        this.callCheck = 0;
-        this.callRun = 0;
-        this.check = function(model) {
-            ++this.callCheck;
-            this.checkCheckId = ++callId;
-            return checkValue;
-        };
-        this.run = async function(state, model) {
-            ++this.callRun;
-            this.idRun = ++callId;
-            return runValue;
-        };
-    })();
+    return new WatchAction(status, model => checkValue, (state, model) => runValue);
 };
 
 const buildCommand = function(status) {
