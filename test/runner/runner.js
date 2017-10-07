@@ -26,14 +26,14 @@ var WatchAction = function(status, check, run) {
         this.checkCheckId = ++callId;
         return check(model);
     };
-    this.run = async function(state, model) {
+    this.run = function(state, model) {
         ++this.callRun;
         this.idRun = ++callId;
         return run(state, model);
     };
 };
 const buildAction = function(status, checkValue, runValue) {
-    return new WatchAction(status, model => checkValue, (state, model) => runValue);
+    return new WatchAction(status, model => checkValue, async (state, model) => runValue);
 };
 
 const buildCommand = function(status) {
