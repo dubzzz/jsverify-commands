@@ -11,8 +11,11 @@ const DEFAULT_TEARDOWN = async (state, model) => {};
 const SUCCESS = "success";
 const NOT_APPLICABLE = "not applicable";
 const FAILURE = "failure";
+const FAILURE_REJECTED_PROMISE = "failure rejected promise";
+const FAILURE_THROW = "failure throw";
 
 const OneOfStatuses = jsc.oneof(...[SUCCESS, NOT_APPLICABLE, FAILURE].map(jsc.constant));
+const OneOfAllStatuses = jsc.oneof(...[SUCCESS, NOT_APPLICABLE, FAILURE, FAILURE_REJECTED_PROMISE, FAILURE_THROW].map(jsc.constant));
 
 var callId = 0;
 var WatchAction = function(status, check, run) {
@@ -41,6 +44,8 @@ const buildCommand = function(status) {
         case SUCCESS: return { command: buildAction(status, true, true) };
         case NOT_APPLICABLE: return { command: buildAction(status, false, true) };
         case FAILURE: return { command: buildAction(status, true, false) };
+        case FAILURE_REJECTED_PROMISE: return { command: new WatchAction(status, async () => true, () => Promise.reject()) };
+        case FAILURE_THROW: return { command: new WatchAction(status, async () => true, () => {throw "";}) };
     }
 };
 
@@ -113,6 +118,18 @@ describe('runner', function() {
                 || commands
                         .slice(failurePosition +1) //drop
                         .every(c => c.command.callCheck === 0 && c.command.callRun === 0);
+        }))
+            .then(val => val ? done(val) : done())
+            .catch(error => done(error));
+    });
+    it('should handle rejected promises and exceptions as failures', function(done) {
+        jsc.assert(jsc.forall(jsc.array(OneOfAllStatuses), async function(statuses) {
+            const commands = statuses.map(buildCommand);
+            const simpleCommands = statuses.map(n => n === FAILURE_REJECTED_PROMISE || n === FAILURE_THROW ? FAILURE : n).map(buildCommand);
+            await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
+            await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, simpleCommands);
+            return commands.every((c, idx) => c.command.callCheck === simpleCommands[idx].command.callCheck
+                    && c.command.callRun === simpleCommands[idx].command.callRun);
         }))
             .then(val => val ? done(val) : done())
             .catch(error => done(error));

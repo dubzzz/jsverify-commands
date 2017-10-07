@@ -5,9 +5,11 @@ var runall = async function(actions, state, model) {
         var ac = actions[idx];
         if (ac.check(model)) {
             ac.hasStarted = true;
-            if (! await ac.run(state, model)) {
-                return false;
-            }
+            try {
+                if (! await ac.run(state, model)) {
+                    return false;
+                }
+            } catch(e) { return false; }
         }
     }
     return true;
