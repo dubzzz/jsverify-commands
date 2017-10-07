@@ -4,7 +4,7 @@
   "description": "Bring commands to JSVerify",
   "main": "src/jscCommands.js",
   "scripts": {
-    "compile": "babel src --out-file jscCommands.js",
+    "compile": "babel --no-babel src --out-file jscCommands.js --presets=es2015",
     "test": "mocha --require babel-polyfill --compilers js:babel-register \"test/**/*.js\"",
     "examples/array": "mocha --require babel-polyfill --compilers js:babel-register examples/array/main.js"
   },
