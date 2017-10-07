@@ -18,7 +18,7 @@ var runner = function(warmup, teardown) {
         var actions = commands.map(c => c.command);
         var {state, model} = await warmup(seed);
         var result = await runall(actions, state, model);
-        await teardown();
+        await teardown(state, model);
         return result;
     };
 };
