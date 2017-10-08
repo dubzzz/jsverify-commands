@@ -20,6 +20,7 @@ https://runkit.com/embed/bypl968ikbpw
 Basically one test is defined as a set of commands. Each command has to define two methods:
 - `check(model): boolean` which takes a model as entry and return whether or not the command should be executed (based on the current state of this model)
 - `run(state, model): Promise(boolean) or boolean` which evolves both the `model` and the `state` and check for potential assertions
+- `toString: string` is an optional but useful method to provide human readable stacktraces on failure
 
 ### Test definition
 
