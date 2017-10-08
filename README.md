@@ -1,4 +1,7 @@
-# JSVerify Commands [![Build Status](https://travis-ci.org/dubzzz/jsverify-commands.svg?branch=master)](https://travis-ci.org/dubzzz/jsverify-commands)
+# JSVerify Commands
+
+[![Build Status](https://travis-ci.org/dubzzz/jsverify-commands.svg?branch=master)](https://travis-ci.org/dubzzz/jsverify-commands)
+[![npm version](https://badge.fury.io/js/jsverify-commands.svg)](https://badge.fury.io/js/jsverify-commands)
 
 ## Introduction
 
