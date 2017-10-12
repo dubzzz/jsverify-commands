@@ -1,13 +1,24 @@
 language: node_js
 node_js:
-  - "6"
-  - "7"
-  - "8"
+  - '6'
+  - '7'
+  - '8'
 
 cache:
   directories:
-    - "node_modules"
+    - node_modules
 
 script:
   - npm run examples/array
   - npm run test
+  - npm run compile
+
+deploy:
+  provider: npm
+  email: npm@dubien.org
+  skip_cleanup: true
+  api_key:
+    secure: OR6xR/b00plZGNYv1IIIH+DGDB2E/I133pFsXEE3f1K/KWtdpmSw4wt/tj2CcEwNSlrNBGYp9bbRwq7B2Hxerb+SaMOLLeYD/5o22yU1wfPZIYGI2r0ZnDYT6cVQiw+bz9mhpny+xgtDDjOK+487BJm6FnCSvdLSYToO/RV1hVFZ9YxTogQdrpt6vUWxDW1fY3Cw49aGTnd6eAAgxw8+BVg6MAKdW5/vuDAEenr6LkDG6qJKlSjlpJWZv3PkIT6bDrrb1WEHZxfxO698b49MysVyc+0g7gpB00wgtCkgLpFMHyddXwtdPWTt6mUpTU769F4jyMBuC/k9xFvD9jkolHj/XP9o9fYqiZ35ha2Ll2V5hVkBnt+X41GFqPAmk1kFrpA0P7WZtmlBo8FbXvt2L5ySl5Rp6oyAQxiVulTMeErJbEQroIOgfl333huYEmrb9/Zuf61YxwfgV5iKLU/2o9OMTBWg6hHwSE7yX7Y1XQRZMQ+cD9cwWFdn4yf28rjh1LY8RkdO+3TIwuvGKvdRpooCE2j4AfN0/qUDlmXD1GmcLRq/K1wxe6JJf1c7NZCVrQ0HoKhML7dDbQ0+dwklban6dROCneNsi3iF0ViCFbQLvwIMeleVZkcQfghFivwRD6pgPj/rMproJ7opck5HWHaidhMCf8CxhJMrdbOoE+c=
+  on:
+    tags: true
+    repo: dubzzz/jsverify-commands
