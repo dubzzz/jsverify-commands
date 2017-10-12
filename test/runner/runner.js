@@ -122,6 +122,15 @@ describe('runner', function() {
             .then(val => val ? done(val) : done())
             .catch(error => done(error));
     });
+    it('should mark started commands for shrinker', function(done) {
+        jsc.assert(jsc.forall(jsc.array(jsc.constant(SUCCESS)), async function(statuses) {
+            const commands = statuses.map(buildCommand);
+            await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
+            return commands.filter(c => c.command.callRun > 0).every(c => c.hasStarted === true);
+        }))
+            .then(val => val ? done(val) : done())
+            .catch(error => done(error));
+    });
     it('should handle rejected promises and exceptions as failures', function(done) {
         jsc.assert(jsc.forall(jsc.array(OneOfAllStatuses), async function(statuses) {
             const commands = statuses.map(buildCommand);

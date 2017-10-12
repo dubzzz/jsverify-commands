@@ -1,12 +1,12 @@
 "use strict";
 
-var runall = async function(actions, state, model) {
-    for (var idx = 0 ; idx != actions.length ; ++idx) {
-        var ac = actions[idx];
-        if (ac.check(model)) {
-            ac.hasStarted = true;
+var runall = async function(commands, state, model) {
+    for (var idx = 0 ; idx != commands.length ; ++idx) {
+        var cm = commands[idx];
+        if (cm.command.check(model)) {
+            cm.hasStarted = true;
             try {
-                if (! await ac.run(state, model)) {
+                if (! await cm.command.run(state, model)) {
                     return false;
                 }
             } catch(e) { return false; }
@@ -17,9 +17,8 @@ var runall = async function(actions, state, model) {
 
 var runner = function(warmup, teardown) {
     return async function(seed, commands) {
-        var actions = commands.map(c => c.command);
         var {state, model} = await warmup(seed);
-        var result = await runall(actions, state, model);
+        var result = await runall(commands, state, model);
         await teardown(state, model);
         return result;
     };
