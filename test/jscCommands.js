@@ -40,7 +40,7 @@ describe('jscCommands', function() {
             assert.notEqual(result, true, 'should fails');
             assert.equal(result.counterexample[1].length, 0, 'no command in counterexample');
         });
-        it('should be able to return an unshrinkable test', async function() {
+        it('should shrink to a single command when everything fails', async function() {
             function FailureCommand() {
                 this.check = (model) => true;
                 this.run = (state, model) => false;
