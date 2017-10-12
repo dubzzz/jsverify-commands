@@ -25,8 +25,15 @@ var jscCommandsArray = function(gen, maxSize) {
             }
             return arr;
         },
-        shrink: (arr) => jsc.array(gen).shrink(arr.filter(c => c.hasStarted === true))
-                .map(narr => narr.map(cloneObject)),
+        shrink: (arr) => {
+            for (let idx = 0 ; idx != arr.length ; ++idx) {
+                if (arr[idx].hasStarted !== true) {
+                    arr.splice(idx--, 1);
+                }
+            }
+            return jsc.array(gen).shrink(arr)
+                .map(narr => narr.map(cloneObject));
+        },
         show: jsc.array(gen).show
     });
 };
