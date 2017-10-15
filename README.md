@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/dubzzz/jsverify-commands.svg?branch=master)](https://travis-ci.org/dubzzz/jsverify-commands)
 [![npm version](https://badge.fury.io/js/jsverify-commands.svg)](https://badge.fury.io/js/jsverify-commands)
+[![Coverage Status](https://coveralls.io/repos/github/dubzzz/jsverify-commands/badge.svg?branch=master)](https://coveralls.io/github/dubzzz/jsverify-commands?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/d0dd594e6f2dd8e8619a/maintainability)](https://codeclimate.com/github/dubzzz/jsverify-commands/maintainability)
 [![dependencies Status](https://david-dm.org/dubzzz/jsverify-commands/status.svg)](https://david-dm.org/dubzzz/jsverify-commands)
 [![devDependencies Status](https://david-dm.org/dubzzz/jsverify-commands/dev-status.svg)](https://david-dm.org/dubzzz/jsverify-commands?type=dev)
