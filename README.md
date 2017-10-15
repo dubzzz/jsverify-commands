@@ -19,16 +19,23 @@ Checking on commands can prove very useful to check user interfaces, state machi
 
 https://runkit.com/embed/bypl968ikbpw
 
+## Table of contents
+
+1. [Syntax](#syntax)
+    1. [Defining a single command](#defining-a-single-command)
+    2. [Gathering commands for your test](#gathering-commands-for-your-test)
+    3. [Running the test](#running-the-test)
+2. [Basic example for Selenium](#basic-example-for-selenium)
+3. [Application on end-to-end tests](#application-on-end-to-end-tests)
+
 ## Syntax
 
-### Commands
+### Defining a single command
 
 Basically one test is defined as a set of commands. Each command has to define two methods:
 - `check(model): boolean` which takes a model as entry and return whether or not the command should be executed (based on the current state of this model)
 - `run(state, model): Promise(boolean) or boolean` which evolves both the `model` and the `state` and check for potential assertions
 - `toString: string` is an optional but useful method to provide human readable stacktraces on failure
-
-### Test definition
 
 Once commands have been defined as classes, they have to be registered as commands.
 
@@ -40,7 +47,19 @@ jscCommands.command(ClassName, ...jsc.arbitrary)
 
 `ClassName` is the class you want to register, `...jsc.arbitrary` is the set of arbitraries to use to define an instance of `ClassName`. Basically registering `jscCommands.command(MyExample, jsc.nat, jsc.array(jsc.boolean))` mean that MyExample commands take as construction parameters a natural number and an array of booleans.
 
-Then you have to pack all these commands using:
+### Gathering commands for your test
+
+As previously defined commands can be part of multiple tests suites, they have to be packed all together using the `jscCommands.commands` wrapper:
+
+```js
+// based on default number of commands by run (at most 100 commands used in a run)
+jscCommands.commands(...previously-defined-commands)
+
+// custom number of commands by run
+jscCommands.commands(maxNumberOfCommandsByRun, ...previously-defined-commands)
+```
+
+Here is an example using the first syntax, building a commands generator creating commands of types `MyExample1`, `MyExample2` and `MyExample3`.
 
 ```js
 jscCommands.commands(
@@ -50,17 +69,34 @@ jscCommands.commands(
 )
 ```
 
-In order to run the tests in Mocha + Selenium, you can use the following code:
+### Running the test
 
-```js
-jsc.assert(jscCommands.forall(commands, warmup, teardown))
-    .then(val => val ? done(val) : done())
-    .catch(error => done(error));
-```
+In order to run the test you just have to call `jscCommands.forall`.
+
 
 With `warmup` an async function returning an object having the fields `state` and `model`. Called before each run.
 
 With `teardown` an async function used to clean after one run.
+
+Here is an example to use the following syntax:
+
+```js
+it('example of commands', function(done) {
+    // ... code ...
+    return await jsc.assert(jscCommands.forall(commands, warmup, teardown));
+});
+```
+
+Or for non async/await versions of node (following is compatible with mocha and jasmine):
+
+```js
+it('example of commands', function(done) {
+    // ... code ...
+    jsc.assert(jscCommands.forall(commands, warmup, teardown))
+        .then(val => val ? done(val) : done())
+        .catch(error => done(error));
+});
+```
 
 ## Basic example for Selenium
 
@@ -104,7 +140,7 @@ test.describe('Basic Example', function() {
         var teardown = async function() { // called at the end of each run (failed or not)
             await driver.get("about:blank");
         };
-        jsc.assert(jscCommands.forallCommands(commands, warmup, teardown))
+        jsc.assert(jscCommands.forall(commands, warmup, teardown))
            .then(val => val ? done(val) : done())
            .catch(error => done(error));
     });
