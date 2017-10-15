@@ -4,9 +4,9 @@
   "description": "Bring commands to JSVerify",
   "main": "lib/jscCommands.js",
   "scripts": {
-    "examples": "mocha --require babel-polyfill --compilers js:babel-register \"examples/**/*.js\"",
+    "examples": "mocha --require babel-polyfill --require babel-register \"examples/**/*.js\"",
     "compile": "babel src --out-dir lib --source-maps",
-    "test": "nyc --reporter=html --reporter=text mocha --require babel-polyfill --compilers js:babel-register \"test/**/*.js\"",
+    "test": "nyc --reporter=html --reporter=text mocha --require babel-polyfill --require babel-register \"test/**/*.js\"",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
