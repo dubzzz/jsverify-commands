@@ -7,15 +7,12 @@ const PopCommand = require('./commands/PopCommand');
 const PushCommand = require('./commands/PushCommand');
 
 describe('Array', function() {
-    it('should confirm commands', function(done) {
+    it('should confirm commands', async function() {
         var commands = jscCommands.commands(
             jscCommands.command(PopCommand),
             jscCommands.command(PushCommand, jsc.nat));
         var warmup = () => new Object({state: [], model: {numEntries: 0}});
         var teardown = () => {};
-
-        jsc.assert(jscCommands.forall(commands, warmup, teardown))
-            .then(val => val ? done(val) : done())
-            .catch(error => done(error));
+        return await jsc.assert(jscCommands.forall(commands, warmup, teardown));
     });
 });
