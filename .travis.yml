@@ -9,9 +9,12 @@ cache:
     - node_modules
 
 script:
-  - npm run examples/array
+  - npm run examples
   - npm run test
   - npm run compile
+
+after_success:
+  - npm run coverage
 
 deploy:
   provider: npm
