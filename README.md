@@ -47,6 +47,8 @@ Taking the example of [RapidCheck](https://labs.spotify.com/2015/06/25/rapid-che
 
 ### A quick draft
 
+#### Generate commands
+
 `jsverify` is able to generate arrays using `jsc.array`. It can also generate arrays of elements taken from an `enum` using `jsc.oneof(jsc.constant(ValueA), jsc.constant(ValueB)...)`.
 
 Lets suppose we have a command class associated with all the commands described in previous part: `PlayCommand`, `PauseCommand`... Using `jsverify` we would be able to build a random array of those constructors and get to something like:
@@ -54,12 +56,44 @@ Lets suppose we have a command class associated with all the commands described 
 ```js
 describe('draft', function() {
     it('basic command implementation', function() {
-        
+        const commandsGen = jsc.array(
+                jsc.oneof(
+                    jsc.constant(PlayCommand),
+                    jsc.constant(PauseCommand),
+                    jsc.constant(NextCommand),
+                    jsc.constant(AddTrackCommand),
+                ));
+        return jsc.assert(jsc.forall(commandsGen, (cons) => run(cons)));
     });
 });
 ```
 
-The idea is to run our code (alias `state`) against a very simplified representation of it (alias `model`).
+#### Run them
+
+Now that we have a random array of constructors for our commands, we want to run them.
+
+You can see that some of our commands have constraints. For instance `play` is not supposed to be run if the playlist is empty. Such constraints impose us to provide a way to diagnose if the command can be run.
+
+So here come the introduction of the methods: `check` and `run`.
+
+As checking the current state on the instance under test itself can raise problems, the idea is to provide our test with a `model`. The `model` is a simplified view of our instance under tests.
+
+Basic implementation of run could be:
+
+```js
+function run(cons) {
+    var model = {};
+    for (let idx = 0 ; idx != cons.length ; ++idx) {
+        const cmd = new cons[idx]();
+        if (cmd.check(model)) {
+            if (!cmd.run(model)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+```
 
 ## Syntax
 
