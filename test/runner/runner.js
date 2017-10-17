@@ -50,27 +50,23 @@ const buildCommand = function(status) {
 };
 
 describe('runner', function() {
-    it('should be true on success, false otherwise', function(done) {
-        jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
+    it('should be true on success, false otherwise', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
             const commands = statuses.map(buildCommand);
             const out = await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
             return out == (commands.find(c => c.command.status === FAILURE) === undefined)
-        }))
-            .then(val => val ? done(val) : done())
-            .catch(error => done(error));
+        }));
     });
-    it('should call check or run zero or one time', function(done) {
-        jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
+    it('should call check or run zero or one time', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
             const commands = statuses.map(buildCommand);
             await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
             return commands.every(c => c.command.callCheck === 0 || c.command.callCheck === 1)
                 && commands.every(c => c.command.callRun === 0 || c.command.callRun === 1);
-        }))
-            .then(val => val ? done(val) : done())
-            .catch(error => done(error));
+        }));
     });
-    it('should call check then run if suitable then next command', function(done) {
-        jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
+    it('should call check then run if suitable then next command', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
             const commands = statuses.map(buildCommand);
             await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
             var lastId = -1;
@@ -82,35 +78,29 @@ describe('runner', function() {
                 lastId = c.command.callRun ? c.command.idRun : c.command.idCheck;
             }
             return true;
-        }))
-            .then(val => val ? done(val) : done())
-            .catch(error => done(error));
+        }));
     });
-    it('should never call run on not applicable', function(done) {
-        jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
+    it('should never call run on not applicable', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
             const commands = statuses.map(buildCommand);
             await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
             return commands
                 .filter(c => c.command.status === NOT_APPLICABLE)
                 .every(c => c.command.callRun === 0);
-        }))
-            .then(val => val ? done(val) : done())
-            .catch(error => done(error));
+        }));
     });
-    it('should call checks before first failure (included)', function(done) {
-        jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
+    it('should call checks before first failure (included)', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
             const commands = statuses.map(buildCommand);
             await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
             const failurePosition = statuses.indexOf(FAILURE);
             return commands
                     .slice(0, failurePosition +1) //take
                     .every(c => c.command.callCheck === 1);
-        }))
-            .then(val => val ? done(val) : done())
-            .catch(error => done(error));
+        }));
     });
-    it('should stop checks and runs after first failure', function(done) {
-        jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
+    it('should stop checks and runs after first failure', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfStatuses), async function(statuses) {
             const commands = statuses.map(buildCommand);
             await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
             const failurePosition = statuses.indexOf(FAILURE);
@@ -118,29 +108,23 @@ describe('runner', function() {
                 || commands
                         .slice(failurePosition +1) //drop
                         .every(c => c.command.callCheck === 0 && c.command.callRun === 0);
-        }))
-            .then(val => val ? done(val) : done())
-            .catch(error => done(error));
+        }));
     });
-    it('should mark started commands for shrinker', function(done) {
-        jsc.assert(jsc.forall(jsc.array(jsc.constant(SUCCESS)), async function(statuses) {
+    it('should mark started commands for shrinker', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfAllStatuses), async function(statuses) {
             const commands = statuses.map(buildCommand);
             await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
             return commands.filter(c => c.command.callRun > 0).every(c => c.hasStarted === true);
-        }))
-            .then(val => val ? done(val) : done())
-            .catch(error => done(error));
+        }));
     });
-    it('should handle rejected promises and exceptions as failures', function(done) {
-        jsc.assert(jsc.forall(jsc.array(OneOfAllStatuses), async function(statuses) {
+    it('should handle rejected promises and exceptions as failures', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfAllStatuses), async function(statuses) {
             const commands = statuses.map(buildCommand);
             const simpleCommands = statuses.map(n => n === FAILURE_REJECTED_PROMISE || n === FAILURE_THROW ? FAILURE : n).map(buildCommand);
             await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
             await (runner(DEFAULT_WARMUP, DEFAULT_TEARDOWN))(DEFAULT_SEED, simpleCommands);
             return commands.every((c, idx) => c.command.callCheck === simpleCommands[idx].command.callCheck
                     && c.command.callRun === simpleCommands[idx].command.callRun);
-        }))
-            .then(val => val ? done(val) : done())
-            .catch(error => done(error));
+        }));
     });
 });
