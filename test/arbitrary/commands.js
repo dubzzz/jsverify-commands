@@ -12,7 +12,7 @@ const MAX_ARRAY_FOR_SHRINK = 100; // max. size for an array to be used in shrink
 const GENSIZE = 10;
 var fakeJscCommand = function(ClassType) {
     return jsc.bless({
-        generator: size => new Object({ command: new ClassType(), parameters: [] }),
+        generator: size => new Object({ command: new ClassType(), parameters: [], shrink: () => lazyseq.nil }),
         shrink: lazyseq.nil,
         show: t => "fake"
     });
@@ -60,7 +60,7 @@ describe('commands', function() {
         const classes = [FakeSuccessCommand, FakeDoNotRunCommand, FakeFailureCommand];
         const oneOfClasses = jsc.oneof(classes.map(c => jsc.constant({Cls: c, name: c.name})));
         var fakeCommandsAfterRun = function(classesToGenerate) {
-            var fakeGenerated = classesToGenerate.map((c, idx) => new Object({command: new c.Cls(idx), parameters: [], name: c.name}));
+            var fakeGenerated = classesToGenerate.map((c, idx) => new Object({command: new c.Cls(idx), parameters: [], name: c.name, shrink: () => lazyseq.nil}));
             for (var idx = 0 ; idx != fakeGenerated.length ; ++idx) {
                 var c = fakeGenerated[idx].command;
                 fakeGenerated[idx].hasStarted = !(c instanceof FakeDoNotRunCommand);

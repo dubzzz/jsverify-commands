@@ -34,7 +34,7 @@ var jscCommandsArray = function(gen, maxSize) {
         cuts.push(0);
 
         return lazyseq.fromArray(cuts.map(v => xs.slice(v)))
-            .append(gen.shrink(x).map(xp => [xp].concat(xs)))
+            .append(x.shrink().map(xp => [xp].concat(xs)))
             .append(shrinkImpl(xs).map(xsp => [x].concat(xsp)));
     };
     return jsc.bless({

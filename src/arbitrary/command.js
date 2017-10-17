@@ -14,17 +14,18 @@ var arbNullTuple = function(arbsArray) {
 };
 
 var arbCommand = function(TypeName, ...arbs) {
+    var arbParameters = arbNullTuple(arbs);
     var build = function(parameters) {
         return {
             command: new TypeName(...parameters),
-            parameters: parameters
+            parameters: parameters,
+            shrink: () => arbParameters.shrink(parameters).map(build)
         };
     };
 
-    var arbParameters = arbNullTuple(arbs);
     return jsc.bless({
         generator: size => build(arbParameters.generator(size)),
-        shrink: cmd => arbParameters.shrink(cmd.parameters).map(build),
+        shrink: cmd => cmd.shrink(),
         show: cmd => cmd.command.toString()
     });
 };

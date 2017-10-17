@@ -126,5 +126,39 @@ describe('jscCommands', function() {
             assert.ok(result.counterexample[1][1].command instanceof CommandC, '2nd is CommandC');
             assert.ok(result.counterexample[1][2].command instanceof CommandC, '3rd is CommandC');
         });
+        it('should shrink on command\'s parameters', async function() {
+            function CommandA(arr1, arr2) {
+                this.check = (model) => model.data[model.data.length -1] === 'B';
+                this.run = (state, model) => {
+                    model.data += "A";
+                    return arr1.length < 3 || arr2.length >= 3;
+                };
+            }
+            function CommandB() {
+                this.check = (model) => true;
+                this.run = (state, model) => {
+                    model.data += "B";
+                    return true;
+                };
+            }
+            const commands = [
+                jscCommands.command(CommandA, jsc.array(jsc.nat), jsc.array(jsc.nat)),
+                jscCommands.command(CommandB)];
+            const result = await jsc.check(jscCommands.forall(
+                    jscCommands.commands(...commands),
+                    () => new Object({state: {}, model: {data: ""}}),
+                ),
+                {quiet: true});
+            
+            assert.notEqual(result, true, 'should fails');
+            assert.equal(result.counterexample[1].length, 2, 'failing sequence contains 2 commands');
+            assert.ok(result.counterexample[1][0].command instanceof CommandB, '1st is CommandB');
+            assert.ok(result.counterexample[1][1].command instanceof CommandA, '2nd is CommandA');
+            assert.ok(Array.isArray(result.counterexample[1][1].parameters[0]), '1st parameter of CommandA is an array');
+            assert.equal(result.counterexample[1][1].parameters[0].length, 3, '1st parameter of CommandA is an array of size 3');
+            assert.deepEqual(result.counterexample[1][1].parameters[0], [0,0,0], '1st parameter of CommandA is an array of zeros');
+            assert.ok(Array.isArray(result.counterexample[1][1].parameters[1]), '2nd parameter of CommandA is an array');
+            assert.equal(result.counterexample[1][1].parameters[1].length, 0, '2nd parameter of CommandA is an empty array');
+        });
     });
 });

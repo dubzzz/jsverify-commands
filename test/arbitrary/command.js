@@ -42,6 +42,11 @@ var areSameParams = function(params1, params2) {
         && params1.every((e, i) => e === params2[i]);
 };
 
+var areEquivalentParams = function(params1, params2) {
+    return params1.length === params2.length
+        && params1.every((e, i) => Array.isArray(e) ? e.every((ee, j) => ee === params2[i][j]) : e === params2[i]);
+};
+
 describe('command', function() {
     describe('generator', function() {
         it('should instantiate an object from the given class', function() {
@@ -75,6 +80,14 @@ describe('command', function() {
                 return areSameParams(v.parameters, v.command.params);
             }));
         });
+
+        it('should provide a shrink method', function() {
+            jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
+                var v = arb.generator(GENSIZE);
+                return typeof(v.shrink) === "function";
+            }));
+        });
     });
     describe('shrink', function() {
         it('should instantiate objects from the given class', function() {
@@ -106,6 +119,27 @@ describe('command', function() {
                 const arb = buildCommandFor(MyEmptyClass, arbsName);
                 var generated = arb.generator(GENSIZE);
                 return arb.shrink(generated).every(v => areSameParams(v.parameters, v.command.params));
+            }));
+        });
+        
+        it('should provide a shrink method on all shrinks', function() {
+            jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
+                var generated = arb.generator(GENSIZE);
+                return arb.shrink(generated).every(v => typeof(v.shrink) === "function");
+            }));
+        });
+
+        it('should provide equivalent shrink method on instance', function() {
+            jsc.assert(jsc.forall(jsc.array(allowedArbs), function(arbsName) {
+                const arb = buildCommandFor(MyEmptyClass, arbsName);
+                var generated = arb.generator(GENSIZE);
+                var viaShrinkMethod = generated.shrink();
+                viaShrinkMethod = Array.isArray(viaShrinkMethod) ? viaShrinkMethod : viaShrinkMethod.toArray();
+                var arbShrink = arb.shrink(generated);
+                arbShrink = Array.isArray(arbShrink) ? arbShrink : arbShrink.toArray();
+                return arbShrink.length === viaShrinkMethod.length
+                    && arbShrink.every((v, idx) => areEquivalentParams(v.command.params, viaShrinkMethod[idx].command.params));
             }));
         });
     });
