@@ -15,6 +15,8 @@ JSVerify commands is an extension of [JSVerify](https://github.com/jsverify/jsve
 
 Checking on commands can prove very useful to check user interfaces, state machines, code mechanisms... A good example is given in [https://labs.spotify.com/2015/06/25/rapid-check/](https://labs.spotify.com/2015/06/25/rapid-check/).
 
+It can be seen as a QA trying to find breaches in your code.
+
 ## Try it online
 
 https://runkit.com/dubzzz/59e65938e4342d0012d3b725
