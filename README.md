@@ -152,11 +152,11 @@ Here is an example to use the following syntax:
 ```js
 it('example of commands', function(done) {
     // ... code ...
-    return await jsc.assert(jscCommands.forall(commands, warmup, teardown));
+    return jsc.assert(jscCommands.forall(commands, warmup, teardown));
 });
 ```
 
-Or for non async/await versions of node (following is compatible with mocha and jasmine):
+Or if you want to handle the promise yourself:
 
 ```js
 it('example of commands', function(done) {
