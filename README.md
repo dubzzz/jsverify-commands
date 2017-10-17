@@ -21,12 +21,45 @@ https://runkit.com/dubzzz/59e65938e4342d0012d3b725
 
 ## Table of contents
 
-1. [Syntax](#syntax)
+1. [Introduction](#introduction)
+    1. [The need for commands](#the-need-for-commands)
+    2. [A quick draft](#a-quick-draft)
+2. [Syntax](#syntax)
     1. [Defining a single command](#defining-a-single-command)
     2. [Gathering commands for your test](#gathering-commands-for-your-test)
     3. [Running the test](#running-the-test)
-2. [Basic example for Selenium](#basic-example-for-selenium)
-3. [Application on end-to-end tests](#application-on-end-to-end-tests)
+3. [Basic example for Selenium](#basic-example-for-selenium)
+4. [Application on end-to-end tests](#application-on-end-to-end-tests)
+
+## Introduction
+
+### The need for commands
+
+`jsverify` is a great tool to do property based testing on my algorithms, so why would I bother with so called commands?
+
+Commands provide an additional layer in order to be able to test UI or a whole program logic using the power of property based testing. Basically it consists in providing the framework the tools it needs to be able to run through your program as a whole.
+
+Taking the example of [RapidCheck](https://labs.spotify.com/2015/06/25/rapid-check/) on a music player, commands would be something like:
+- play: _expect the player to play something, can only be used if there is at least one track_
+- pause: _expect the player not to play anything_
+- next: _expect the player to switch to another song, except if the playlist is limited to one track_
+- add track: _expect the player to add the track to playlist impacting current status (aka is playing A for instance)_
+
+### A quick draft
+
+`jsverify` is able to generate arrays using `jsc.array`. It can also generate arrays of elements taken from an `enum` using `jsc.oneof(jsc.constant(ValueA), jsc.constant(ValueB)...)`.
+
+Lets suppose we have a command class associated with all the commands described in previous part: `PlayCommand`, `PauseCommand`... Using `jsverify` we would be able to build a random array of those constructors and get to something like:
+
+```js
+describe('draft', function() {
+    it('basic command implementation', function() {
+        
+    });
+});
+```
+
+The idea is to run our code (alias `state`) against a very simplified representation of it (alias `model`).
 
 ## Syntax
 
