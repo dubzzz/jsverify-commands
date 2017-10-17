@@ -19,8 +19,8 @@ It can be seen as a QA trying to find breaches in your code.
 
 ## Try it online
 
-- Array: https://runkit.com/dubzzz/59e65938e4342d0012d3b725
-- Music Player: https://runkit.com/dubzzz/59e6679c8caff40012a05097
+- Array: https://runkit.com/dubzzz/jsverify-commands-array
+- Music Player: https://runkit.com/dubzzz/jsverify-commands-musicplayer
 
 ## Table of contents
 
