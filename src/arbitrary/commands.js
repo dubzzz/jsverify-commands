@@ -55,7 +55,7 @@ var jscCommandsArray = function(gen, maxSize) {
             return shrinkImpl(arr)
                 .map(narr => narr.map(cloneObject));
         },
-        show: jsc.array(gen).show
+        show: (arr) => arr.map(c => c.command.name !== undefined ? c.command.name : c.command.toString()).join(',')
     });
 };
 
