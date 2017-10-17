@@ -1,6 +1,6 @@
 {
   "name": "jsverify-commands",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Bring commands to JSVerify",
   "main": "lib/jscCommands.js",
   "scripts": {
