@@ -12,7 +12,7 @@ const PushCommand = require('./commands/PushCommand');
 const SizeCommand = require('./commands/SizeCommand');
 
 describe('Circular-queue', function() {
-    it('should confirm commands', async function() {
+    it('should confirm commands', function() {
         var commands = jscCommands.commands(
             jscCommands.command(IsEmptyCommand),
             jscCommands.command(IsFullCommand),
@@ -24,6 +24,6 @@ describe('Circular-queue', function() {
             model: {entries: [], maxEntries: num}
         });
         var teardown = () => {};
-        return await jsc.assert(jscCommands.forall(jsc.integer(1, 64), commands, warmup, teardown));
+        return jsc.assert(jscCommands.forall(jsc.integer(1, 64), commands, warmup, teardown));
     });
 });
