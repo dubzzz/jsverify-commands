@@ -19,7 +19,8 @@ It can be seen as a QA trying to find breaches in your code.
 
 ## Try it online
 
-https://runkit.com/dubzzz/59e65938e4342d0012d3b725
+- Array: https://runkit.com/dubzzz/59e65938e4342d0012d3b725
+- Music Player: https://runkit.com/dubzzz/59e6679c8caff40012a05097
 
 ## Table of contents
 
