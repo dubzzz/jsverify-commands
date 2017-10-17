@@ -104,7 +104,8 @@ function run(cons) {
 Basically one test is defined as a set of commands. Each command has to define two methods:
 - `check(model): boolean` which takes a model as entry and return whether or not the command should be executed (based on the current state of this model)
 - `run(state, model): Promise(boolean) or boolean` which evolves both the `model` and the `state` and check for potential assertions
-- `name: string attribute of the instance` is an optional but useful attribute to provide human readable stacktraces on failure
+- `toString: string` is an optional but useful method to provide human readable stacktraces on failure
+- `name: string attribute of the instance` optional and same as toString, it has an higher priority
 
 Once commands have been defined as classes, they have to be registered as commands.
 
