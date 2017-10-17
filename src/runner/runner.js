@@ -1,8 +1,8 @@
 "use strict";
 
-var runall = async function(commands, state, model) {
-    for (var idx = 0 ; idx != commands.length ; ++idx) {
-        var cm = commands[idx];
+const runall = async function(commands, state, model) {
+    for (let idx = 0 ; idx != commands.length ; ++idx) {
+        const cm = commands[idx];
         if (cm.command.check(model)) {
             cm.hasStarted = true;
             try {
@@ -15,10 +15,10 @@ var runall = async function(commands, state, model) {
     return true;
 };
 
-var runner = function(warmup, teardown) {
+const runner = function(warmup, teardown) {
     return async function(seed, commands) {
-        var {state, model} = await warmup(seed);
-        var result = await runall(commands, state, model);
+        const {state, model} = await warmup(seed);
+        const result = await runall(commands, state, model);
         await teardown(state, model);
         return result;
     };

@@ -2,7 +2,7 @@
 const jsc = require('jsverify');
 const lazyseq = require("lazy-seq");
 
-var arbNullTuple = function(arbsArray) {
+const arbNullTuple = function(arbsArray) {
     if (arbsArray.length === 0) {
         return jsc.bless({
             generator: size => [],
@@ -13,9 +13,9 @@ var arbNullTuple = function(arbsArray) {
     return jsc.tuple(arbsArray);
 };
 
-var arbCommand = function(TypeName, ...arbs) {
-    var arbParameters = arbNullTuple(arbs);
-    var build = function(parameters) {
+const arbCommand = function(TypeName, ...arbs) {
+    const arbParameters = arbNullTuple(arbs);
+    const build = function(parameters) {
         return {
             command: new TypeName(...parameters),
             parameters: parameters,

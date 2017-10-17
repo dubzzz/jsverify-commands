@@ -2,18 +2,18 @@
 const jsc = require('jsverify');
 const {runner} = require('./runner');
 
-var forallImpl = function(arbSeed, arbCommands, warmup, teardown) {
+const forallImpl = function(arbSeed, arbCommands, warmup, teardown) {
     return jsc.forall(arbSeed, arbCommands, runner(warmup, teardown));
 };
 
-var DEFAULT_SEED_GEN = jsc.constant(undefined);
-var DEFAULT_WARMUP = seed => new Object({state: {}, model: {}});
-var DEFAULT_TEARDOWN = () => {};
+const DEFAULT_SEED_GEN = jsc.constant(undefined);
+const DEFAULT_WARMUP = seed => new Object({state: {}, model: {}});
+const DEFAULT_TEARDOWN = () => {};
 
-var isGenerator = function(obj) {
+const isGenerator = function(obj) {
     return obj !== undefined && obj.generator !== undefined;
 };
-var forall = function(...params) {
+const forall = function(...params) {
     if (params.length === 0 || ! isGenerator(params[0])) {
         throw "forall requires at least a commands generator as first argument";
     }

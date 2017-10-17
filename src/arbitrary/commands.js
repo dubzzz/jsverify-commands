@@ -2,32 +2,22 @@
 const jsc = require('jsverify');
 const lazyseq = require("lazy-seq");
 
-var cloneObject = function(o) {
-    var cloned = {};
+const cloneObject = function(o) {
+    const cloned = {};
     Object.keys(o).filter(v => v != "hasStarted").forEach(k => cloned[k] = o[k]);
     return cloned;
 };
 
-
-
-var jscCommandsArray = function(gen, maxSize) {
-    /**
-     * jsc.array uses logsize function as a limiter of its size...
-     * 
-     * // Helper, essentially: log2(size + 1)
-     * function logsize(size) {
-     *   return Math.max(Math.round(Math.log(size + 1) / Math.log(2), 0));
-     * }
-     */
-    var shrinkImpl = function(arr) {
+const jscCommandsArray = function(gen, maxSize) {
+    const shrinkImpl = function(arr) {
         if (arr.length === 0) {
             return lazyseq.nil;
         }
 
-        var x = arr[0];
-        var xs = arr.slice(1);
+        const x = arr[0];
+        const xs = arr.slice(1);
 
-        var cuts = [];
+        const cuts = [];
         for (let start = Math.floor(xs.length/2) ; start !== 0 ; start = Math.floor(start/2)) {
             cuts.push(start);
         }
@@ -39,12 +29,8 @@ var jscCommandsArray = function(gen, maxSize) {
     };
     return jsc.bless({
         generator: (size) => {
-            var arrsize = jsc.random(0, maxSize);
-            var arr = new Array(arrsize);
-            for (var i = 0; i < arrsize; i++) {
-                arr[i] = gen.generator(size);
-            }
-            return arr;
+            const arrsize = jsc.random(0, maxSize);
+            return [...new Array(arrsize).keys()].map(() => gen.generator(size));
         },
         shrink: (arr) => {
             for (let idx = 0 ; idx != arr.length ; ++idx) {
@@ -59,7 +45,7 @@ var jscCommandsArray = function(gen, maxSize) {
     });
 };
 
-var arbCommands = function(...commands) {
+const arbCommands = function(...commands) {
     return typeof(commands[0]) === 'number'
         ? jscCommandsArray(jsc.oneof(...commands.slice(1)), commands[0])
         : jscCommandsArray(jsc.oneof(...commands), 100);
