@@ -145,10 +145,19 @@ const forall = function(...params) {
             params[4] || DEFAULT_SETTINGS);
 };
 const assertForall = async function(...params) {
-    const out = await jsc.assert(forall(...params));
     const settings = (!isGenerator(params[1]) ? params[3] : params[4]) || DEFAULT_SETTINGS;
-    if (settings.metrics && settings.metrics.show) {
-        console.log(settings.metrics.toString());
+    const genericTreatment = () => {
+        if (settings.metrics && settings.metrics.show) {
+            console.log(settings.metrics.toString());
+        }
+    };
+    try {
+        const out = await jsc.assert(forall(...params));
+        genericTreatment();
+    }
+    catch (err) {
+        genericTreatment();
+        throw err;
     }
     return out;
 };
