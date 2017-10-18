@@ -154,12 +154,12 @@ const assertForall = async function(...params) {
     try {
         const out = await jsc.assert(forall(...params));
         genericTreatment();
+        return out;
     }
     catch (err) {
         genericTreatment();
         throw err;
     }
-    return out;
 };
 
 module.exports = {
