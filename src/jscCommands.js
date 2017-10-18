@@ -2,8 +2,8 @@
 
 import "babel-polyfill";
 const {command} = require('./arbitrary/command.js');
-const {commands, numCommands, filter} = require('./arbitrary/commands.js');
-const {forall, forallCommandsSeeded} = require('./runner/forall.js');
+const {commands} = require('./arbitrary/commands.js');
+const {forall} = require('./runner/forall.js');
 
 module.exports = {
     command: command,
