@@ -105,4 +105,110 @@ describe('metrics', function() {
             run: {failed: 0, exception: 0, success: 0}
         });
     });
+    it('should count calls', function() {
+        const rawArb = jsc.array(jsc.oneof([
+            "CheckFail", "CheckThrow", "RunOk", "RunFail", "RunThrow",
+            "AnonymousCheckFail", "AnonymousCheckThrow", "AnonymousRunOk", "AnonymousRunFail", "AnonymousRunThrow"
+        ].map(jsc.constant)));
+
+        return jsc.assert(jsc.forall(rawArb, async function(commands) {
+            let expected = {};
+            const increaseGenerated = function(key) {
+                expected[key] = expected[key] || {
+                    generated: 0,
+                    shrink: 0,
+                    check: {failed: 0, exception: 0, success: 0},
+                    run: {failed: 0, exception: 0, success: 0}
+                };
+                ++expected[key].generated;
+            }
+            const CheckFailCommand = function(logit = "CheckFailCommand") {
+                increaseGenerated(logit);
+                this.check = () => {
+                    ++expected[logit].check.failed;
+                    return false;
+                };
+                this.run = () => {
+                    ++expected[logit].run.success;
+                    return true;
+                };
+            };
+            const CheckThrowCommand = function(logit = "CheckThrowCommand") {
+                increaseGenerated(logit);
+                this.check = () => {
+                    ++expected[logit].check.exception;
+                    throw "CheckThrowCommand";
+                };
+                this.run = () => {
+                    ++expected[logit].run.success;
+                    return true;
+                };
+            };
+            const RunOkCommand = function(logit = "RunOkCommand") {
+                increaseGenerated(logit);
+                this.check = () => {
+                    ++expected[logit].check.success;
+                    return true;
+                };
+                this.run = () => {
+                    ++expected[logit].run.success;
+                    return true;
+                };
+            };
+            const RunFailCommand = function(logit = "RunFailCommand") {
+                increaseGenerated(logit);
+                this.check = () => {
+                    ++expected[logit].check.success;
+                    return true;
+                };
+                this.run = () => {
+                    ++expected[logit].run.failed;
+                    return false;
+                };
+            };
+            const RunThrowCommand = function(logit = "RunThrowCommand") {
+                increaseGenerated(logit);
+                this.check = () => {
+                    ++expected[logit].check.success;
+                    return true;
+                };
+                this.run = () => {
+                    ++expected[logit].run.exception;
+                    throw "RunThrow";
+                };
+            };
+            const Anonymous = function(ctor) {
+                const under = new ctor("Anonymous");
+                this.check = () => under.check(),
+                this.run = () => under.run()
+            };
+            const commandsMapping = {
+                CheckFail: () => new CheckFailCommand(),
+                CheckThrow: () => new CheckThrowCommand(),
+                RunOk: () => new RunOkCommand(),
+                RunFail: () => new RunFailCommand(),
+                RunThrow: () => new RunThrowCommand(),
+                AnonymousCheckFail: () => new Anonymous(CheckFailCommand),
+                AnonymousCheckThrow: () => new Anonymous(CheckThrowCommand),
+                AnonymousRunOk: () => new Anonymous(RunOkCommand),
+                AnonymousRunFail: () => new Anonymous(RunFailCommand),
+                AnonymousRunThrow: () => new Anonymous(RunThrowCommand)
+            };
+            
+            const underlyingArb = jsc.constant(commands.map(name => new Object({command: commandsMapping[name]()})));
+            let recorded = {};
+            const decorator = Metrics.decorate(underlyingArb, recorded);
+            const generated = decorator.generator(GENSIZE);
+            for (var idx = 0 ; idx !== generated.length ; ++idx) {
+                try {
+                    const cmd = generated[idx].command;
+                    cmd.check() && await cmd.run();
+                }
+                catch(err) {}
+                finally {}
+            }
+            assert.deepEqual(recorded, expected);
+            return true;
+        }));
+    });
 });
