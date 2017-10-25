@@ -1,7 +1,7 @@
 "use strict";
 const jsc = require('jsverify');
 const {runner} = require('./runner');
-const MetricsDecorator = require('../decorator/metricsDecorator');
+const Metrics = require('../decorator/metrics');
 
 const isEnabled = function(setting) {
     return setting === true || setting === 1 || setting === 'on';
@@ -10,7 +10,7 @@ const isEnabled = function(setting) {
 const alterArbCommands = function(arb, settings) {
     if (isEnabled(settings.metrics)) {
         settings.metrics_output = {};        
-        return MetricsDecorator.decorate(arb, settings.metrics_output);
+        return Metrics.decorate(arb, settings.metrics_output);
     }
     return arb;
 };
@@ -48,7 +48,7 @@ const assertForall = async function(...params) {
     const settings = (!isGenerator(params[1]) ? params[3] : params[4]) || DEFAULT_SETTINGS;
     const genericTreatment = () => {
         if (isEnabled(settings.verbose) && isEnabled(settings.metrics)) {
-            console.log(MetricsDecorator.prettyPrint(settings.metrics_output));
+            console.log(Metrics.prettyPrint(settings.metrics_output));
         }
     };
     try {
