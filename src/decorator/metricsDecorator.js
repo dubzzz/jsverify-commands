@@ -1,6 +1,15 @@
 "use strict";
 const jsc = require('jsverify');
 
+const emptyOutput = function() {
+    return {
+        generated: 0,
+        shrink: 0,
+        check: {failed: 0, exception: 0, success: 0},
+        run: {failed: 0, exception: 0, success: 0}
+    };
+};
+
 const wrapSyncCommandMethod = function(data, oldMethod) {
     return (...params) => {
         try {
@@ -42,12 +51,7 @@ const wrapCommandMethod = function(data, oldMethod) {
 const wrapCommand = function(gen, data) {
     const name = gen.command.constructor.name;
     
-    data[name] = data[name] || {
-        generated: 0,
-        shrink: 0,
-        check: {failed: 0, exception: 0, success: 0},
-        run: {failed: 0, exception: 0, success: 0}
-    };
+    data[name] = data[name] || emptyOutput();
     ++data[name].generated;
 
     gen.command.check = wrapSyncCommandMethod(data[name].check, gen.command.check);
@@ -101,11 +105,24 @@ const printOneRecord = function(name, record) {
         + `${padMeasure(record.run.exception)} |`;
 };
 
+const sumObjects = function(r1, r2) {
+    const out = {};
+    const ks = Object.keys(r1);
+    for (let idx = 0 ; idx != ks.length ; ++idx) {
+        const k = ks[idx];
+        out[k] = typeof r1[k] === 'number'
+                ? r1[k] + r2[k]
+                : sumObjects(r1[k], r2[k]);
+    }
+    return out;
+};
+
 const prettyPrint = function(out) {
     const head = printHead();
     const sep = head.split('\n')[0].replace(/[^|]/g, '-').replace(/\|/g, '+');
     const content = Object.keys(out).map(n => printOneRecord(n, out[n])).join('\n');
-    return `${sep}\n${head}\n${sep}\n${content}\n${sep}`;
+    const footer = printOneRecord("", Object.values(out).reduce(sumObjects, emptyOutput()));
+    return `${sep}\n${head}\n${sep}\n${content}\n${sep}\n${footer}\n${sep}`;
 };
 
 module.exports = {
