@@ -31,6 +31,7 @@ It can be seen as a QA trying to find breaches in your code.
     1. [Defining a single command](#defining-a-single-command)
     2. [Gathering commands for your test](#gathering-commands-for-your-test)
     3. [Running the test](#running-the-test)
+    4. [Advanced settings](#advanced-settings)
 3. [Basic example for Selenium](#basic-example-for-selenium)
 4. [Application on end-to-end tests](#application-on-end-to-end-tests)
 
@@ -142,19 +143,20 @@ jscCommands.commands(
 
 ### Running the test
 
-In order to run the test you just have to call `jscCommands.forall`.
-
+In order to run the test you just have to call `jscCommands.forall` to create the associated property.
 
 With `warmup` an async function returning an object having the fields `state` and `model`. Called before each run.
 
 With `teardown` an async function used to clean after one run.
 
+With `settings` an object specifying settings that should be used to run the test. Those settings are specific to jsverify-commands, they are described in the next part. By default, or if not set, it will be set to `{}`.
+
 Here is an example to use the following syntax:
 
 ```js
-it('example of commands', function(done) {
+it('example of commands', function() {
     // ... code ...
-    return jsc.assert(jscCommands.forall(commands, warmup, teardown));
+    return jsc.assert(jscCommands.forall(commands, warmup, teardown, settings));
 });
 ```
 
@@ -163,11 +165,17 @@ Or if you want to handle the promise yourself:
 ```js
 it('example of commands', function(done) {
     // ... code ...
-    jsc.assert(jscCommands.forall(commands, warmup, teardown))
+    jsc.assert(jscCommands.forall(commands, warmup, teardown, settings))
         .then(val => val ? done(val) : done())
         .catch(error => done(error));
 });
 ```
+
+### Advanced settings
+
+Settings can be enabled by setting their value to `true`, `1` or `"on"`. Currently available settings are:
+- `metrics`: enable the recording of metrics concerning the number of instances generated, calls to shrink, calls to check and status and calls to run and status. Output is available in settings object itself under the key `metrics_output`.
+- `verbose`: switch assert to verbose mode. Display the metrics recorded by metrics at the end of the test. In order to be able to use this setting you have to replace `jsc.assert(jscCommands.forall(...))` by its equivalent `jscCommands.assertForall()`.
 
 ## Basic example for Selenium
 
