@@ -174,6 +174,7 @@ it('example of commands', function(done) {
 ### Advanced settings
 
 Settings can be enabled by setting their value to `true`, `1` or `"on"`. Currently available settings are:
+- `log`: register another logger (by default it uses `console.log` in verbose mode). Logger as to be: `log(s: string): unit`.
 - `metrics`: enable the recording of metrics concerning the number of instances generated, calls to shrink, calls to check and status and calls to run and status. Output is available in settings object itself under the key `metrics_output`.
 - `verbose`: switch assert to verbose mode. Display the metrics recorded by metrics at the end of the test. In order to be able to use this setting you have to replace `jsc.assert(jscCommands.forall(...))` by its equivalent `jscCommands.assertForall()`.
 
