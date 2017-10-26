@@ -20,7 +20,7 @@ describe('forall', function() {
             hasCalledTeardown = state !== undefined && model !== undefined;
         };
         const out = await jsc.assert(forall(jsc.constant([]), wup, tdown, settings));
-        assert.strictEqual(settings.metrics_output, undefined, "no record for metrics");
+        assert.deepEqual(settings, {}, "no impact on incoming settings on empty settings");
         return out && hasCalledWarmup && hasCalledTeardown;
     });
     it('should be able to be called with a seed generator', async function() {
@@ -35,7 +35,7 @@ describe('forall', function() {
             hasCalledTeardown = state !== undefined && model !== undefined;
         };
         const out = await jsc.assert(forall(jsc.array(jsc.integer), jsc.constant([]), wup, tdown, settings));
-        assert.strictEqual(settings.metrics_output, undefined, "no record for metrics");
+        assert.deepEqual(settings, {}, "no impact on incoming settings on empty settings");
         return out && hasCalledWarmup && hasCalledTeardown;
     });
     it('should record metrics if asked to', async function() {
