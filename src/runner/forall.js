@@ -48,7 +48,7 @@ const assertForall = async function(...params) {
     const settings = (!isGenerator(params[1]) ? params[3] : params[4]) || DEFAULT_SETTINGS;
     const genericTreatment = () => {
         if (isEnabled(settings.verbose) && isEnabled(settings.metrics)) {
-            console.log(Metrics.prettyPrint(settings.metrics_output));
+            (settings.log || console.log)(Metrics.prettyPrint(settings.metrics_output));
         }
     };
     try {
