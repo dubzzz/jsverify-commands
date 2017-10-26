@@ -127,4 +127,43 @@ describe('runner', function() {
                     && c.command.callRun === simpleCommands[idx].command.callRun);
         }));
     });
+    it('should always call warmup once', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfAllStatuses), async function(statuses) {
+            const commands = statuses.map(buildCommand);
+            let hasBeenCalled = 0;
+            const warmup = () => {
+                ++hasBeenCalled;
+                return DEFAULT_WARMUP();
+            };
+            await (runner(warmup, DEFAULT_TEARDOWN))(DEFAULT_SEED, commands);
+            return hasBeenCalled === 1;
+        }));
+    });
+    it('should always call teardown once', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfAllStatuses), async function(statuses) {
+            const commands = statuses.map(buildCommand);
+            let hasBeenCalled = 0;
+            const teardown = () => {
+                ++hasBeenCalled;
+                return DEFAULT_TEARDOWN();
+            };
+            await (runner(DEFAULT_WARMUP, teardown))(DEFAULT_SEED, commands);
+            return hasBeenCalled === 1;
+        }));
+    });
+    it('should always call teardown once even on warmup failure', function() {
+        return jsc.assert(jsc.forall(jsc.array(OneOfAllStatuses), async function(statuses) {
+            const commands = statuses.map(buildCommand);
+            let hasBeenCalled = 0;
+            const warmup = () => {
+                throw "warmup";
+            };
+            const teardown = () => {
+                ++hasBeenCalled;
+                return DEFAULT_TEARDOWN();
+            };
+            await (runner(DEFAULT_WARMUP, teardown))(DEFAULT_SEED, commands);
+            return hasBeenCalled === 1;
+        }));
+    });
 });
