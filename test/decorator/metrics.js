@@ -213,4 +213,54 @@ describe('metrics', function() {
             }));
         });
     });
+    describe('prettyPrint', function() {
+        it('should be able to print for no entry', function() {
+            const data = {};
+            const out = Metrics.prettyPrint(data).split('\n');
+            assert.equal(out.length, 6);
+            assert.equal(out[3], out[0]);
+            assert.equal(out[5], out[0]);
+            assert.ok(/^\| +\| +0 \| +0 \| +0 \| +0 \| +0 \| +0 \| +0 \| +0 \|$/.exec(out[4]), "Total line filled with zeros");            
+        });
+        it('should be able to print for a single entry', function() {
+            const data = {
+                MyCommandName: {
+                    generated: 1,
+                    shrink: 2,
+                    check: {failed: 3, exception: 4, success: 5},
+                    run: {failed: 6, exception: 7, success: 8}
+                }
+            };
+            const out = Metrics.prettyPrint(data).split('\n');
+            assert.equal(out[3], out[0]);
+            assert.equal(out[5], out[0]);
+            assert.equal(out[7], out[0]);
+            assert.ok(/^\| +MyCommandName \| +1 \| +2 \| +5 \| +3 \| +4 \| +8 \| +6 \| +7 \|$/.exec(out[4]));
+            assert.equal(out[6].split('|').slice(2).join('|'), out[4].split('|').slice(2).join('|'), "Total line is the same as command except the name")            
+        });
+        it('should be able to print multiple entries', function() {
+            const data = {
+                MyCommandName: {
+                    generated: 1,
+                    shrink: 2,
+                    check: {failed: 3, exception: 4, success: 5},
+                    run: {failed: 6, exception: 7, success: 8}
+                }, MySecondCommandName: {
+                    generated: 10,
+                    shrink: 21,
+                    check: {failed: 30, exception: 9, success: 5},
+                    run: {failed: 6, exception: 7, success: 0}
+                },
+            };
+            const out = Metrics.prettyPrint(data).split('\n');
+            assert.equal(out[3], out[0]);
+            assert.equal(out[6], out[0]);
+            assert.equal(out[8], out[0]);
+            const regCommand = /^\| +MyCommandName \| +1 \| +2 \| +5 \| +3 \| +4 \| +8 \| +6 \| +7 \|$/;
+            const regSecondCommand = /^\| +MySecondCommandName \| +10 \| +21 \| +5 \| +30 \| +9 \| +0 \| +6 \| +7 \|$/;
+            assert.ok((out[4].indexOf('MyCommandName') === -1 ? regSecondCommand : regCommand).exec(out[4]));
+            assert.ok((out[4].indexOf('MyCommandName') === -1 ? regCommand : regSecondCommand).exec(out[5]));
+            assert.ok(/^\| +\| +11 \| +23 \| +10 \| +33 \| +13 \| +8 \| +12 \| +14 \|$/.exec(out[7]), "Total line is the sum of the two above");  
+        });
+    });
 });

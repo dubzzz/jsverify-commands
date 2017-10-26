@@ -122,7 +122,9 @@ const prettyPrint = function(out) {
     const sep = head.split('\n')[0].replace(/[^|]/g, '-').replace(/\|/g, '+');
     const content = Object.keys(out).map(n => printOneRecord(n, out[n])).join('\n');
     const footer = printOneRecord("", Object.values(out).reduce(sumObjects, emptyOutput()));
-    return `${sep}\n${head}\n${sep}\n${content}\n${sep}\n${footer}\n${sep}`;
+    return Object.keys(out).length !== 0
+            ? `${sep}\n${head}\n${sep}\n${content}\n${sep}\n${footer}\n${sep}`
+            : `${sep}\n${head}\n${sep}\n${footer}\n${sep}`;
 };
 
 module.exports = {
