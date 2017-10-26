@@ -3,12 +3,23 @@ const jsc = require('jsverify');
 const {runner} = require('./runner');
 const Metrics = require('../decorator/metrics');
 
-const isEnabled = function(setting) {
+const isEnabledTest = function(setting) {
     return setting === true || setting === 1 || setting === 'on';
 };
 
+const isEnabled = function(settings, name) {
+    let envSettings = {};
+    try {
+        envSettings = JSON.parse(process.env.COMMANDS_DEFAULT);
+    }
+    catch (e) {}
+    return settings.hasOwnProperty(name)
+            ? isEnabledTest(settings[name])
+            : isEnabledTest(envSettings[name]);
+};
+
 const alterArbCommands = function(arb, settings) {
-    if (isEnabled(settings.metrics)) {
+    if (isEnabled(settings, 'metrics')) {
         settings.metrics_output = {};        
         return Metrics.decorate(arb, settings.metrics_output);
     }
@@ -47,7 +58,7 @@ const forall = function(...params) {
 const assertForall = async function(...params) {
     const settings = (!isGenerator(params[1]) ? params[3] : params[4]) || DEFAULT_SETTINGS;
     const genericTreatment = () => {
-        if (isEnabled(settings.verbose) && isEnabled(settings.metrics)) {
+        if (isEnabled(settings, 'verbose') && isEnabled(settings, 'metrics')) {
             (settings.log || console.log)(Metrics.prettyPrint(settings.metrics_output));
         }
     };
