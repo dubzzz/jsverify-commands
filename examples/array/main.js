@@ -13,6 +13,6 @@ describe('Array', function() {
             jscCommands.command(PushCommand, jsc.nat));
         var warmup = () => new Object({state: [], model: {numEntries: 0}});
         var teardown = () => {};
-        return jsc.assert(jscCommands.forall(commands, warmup, teardown));
+        return jscCommands.assertForall(commands, warmup, teardown);
     });
 });

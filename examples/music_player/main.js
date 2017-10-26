@@ -23,6 +23,6 @@ describe('MusicPlayer', function() {
         });
         var teardown = () => {};
 
-        return jsc.assert(jscCommands.forall(commands, warmup, teardown));
+        return jscCommands.assertForall(commands, warmup, teardown);
     });
 });

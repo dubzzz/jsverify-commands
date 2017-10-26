@@ -24,6 +24,6 @@ describe('Circular-queue', function() {
             model: {entries: [], maxEntries: num}
         });
         var teardown = () => {};
-        return jsc.assert(jscCommands.forall(jsc.integer(1, 64), commands, warmup, teardown));
+        return jscCommands.assertForall(jsc.integer(1, 64), commands, warmup, teardown);
     });
 });
