@@ -178,6 +178,8 @@ Settings can be enabled by setting their value to `true`, `1` or `"on"`. Current
 - `metrics`: enable the recording of metrics concerning the number of instances generated, calls to shrink, calls to check and status and calls to run and status. Output is available in settings object itself under the key `metrics_output`.
 - `verbose`: switch assert to verbose mode. Display the metrics recorded by metrics at the end of the test. In order to be able to use this setting you have to replace `jsc.assert(jscCommands.forall(...))` by its equivalent `jscCommands.assertForall()`.
 
+These settings can also be defined in an environnement variable dubbed `COMMANDS_DEFAULT`. They will be used in all tests except if they are overriden by a test. In this case, test's settings are prioritized. If the settings at test level do not override the key then the environnement variable will be taken into account.
+
 ## Basic example for Selenium
 
 Following example show how to use it with Selenium.
