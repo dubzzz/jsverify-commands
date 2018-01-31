@@ -6,7 +6,8 @@ const runall = async function(commands, state, model) {
         if (cm.command.check(model)) {
             cm.hasStarted = true;
             try {
-                if (! await cm.command.run(state, model)) {
+            	const status = await cm.command.run(state, model);
+                if (status !== undefined && !status) {
                     return false;
                 }
             } catch(e) { return false; }
