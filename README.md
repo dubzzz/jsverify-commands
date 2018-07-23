@@ -1,3 +1,5 @@
+**DISCLAIMER:** features provided by jsverify-commands are currently being implemented into [fast-check](https://github.com/dubzzz/fast-check/). The move has been done because the shrinkers provided by jsverify were far too limited to handle real world commands. *See you on fast-check...* - meanwhile if you cannot wait you can follow the example for commands provided for fast-check: [here](https://github.com/dubzzz/fast-check/tree/master/example/model-based-testing).
+
 # JSVerify Commands
 
 [![Build Status](https://travis-ci.org/dubzzz/jsverify-commands.svg?branch=master)](https://travis-ci.org/dubzzz/jsverify-commands)
