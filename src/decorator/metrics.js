@@ -50,12 +50,18 @@ const wrapCommandMethod = function(data, oldMethod) {
 
 const wrapCommand = function(gen, data) {
     const name = gen.command.constructor.name;
-    
+
     data[name] = data[name] || emptyOutput();
     ++data[name].generated;
 
-    gen.command.check = wrapSyncCommandMethod(data[name].check, gen.command.check);
-    gen.command.run = wrapCommandMethod(data[name].run, gen.command.run);
+    gen.command.check = wrapSyncCommandMethod(
+        data[name].check,
+        gen.command.check.bind(gen.command)
+    );
+    gen.command.run = wrapCommandMethod(
+        data[name].run,
+        gen.command.run.bind(gen.command)
+    );
 
     const oldShrink = gen.shrink;
     gen.shrink = () => {
