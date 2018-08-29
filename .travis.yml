@@ -1,28 +1,24 @@
 language: node_js
 node_js:
-  - '6'
-  - '7'
-  - '8'
-
+- '6'
+- '7'
+- '8'
 cache:
   directories:
-    - node_modules
-
+  - node_modules
 script:
-  - npm run examples
-  - npm run test
-  - npm run compile
-
+- npm run examples
+- npm run test
+- npm run compile
 after_success:
-  - npm run coverage
-  - npm run codeclimate
-
+- npm run coverage
+- npm run codeclimate
 deploy:
   provider: npm
   email: npm@dubien.org
   skip_cleanup: true
   api_key:
-    secure: xvMdgrmNAwVEvoy1yLo2T6SnAtiVZNN/YShFK9QzJXuUrcNgW3fp/M0B6PACyHH5deriMRF99E/O10in3dKbu30kNvi88tRONPmV0Yv58G67IDl5S+sd9BoHWXB2xGYqqxYkcbPyB//2qB3p1KyG56fu0GshbtYdop8WTBjLdDLjqyS1EcuAGg2mxktvfzjSjfoUhqW5gQyo0VwAeUfytpD7kiPJXG1B14JPXEEogX2yQTdZLEiqMHtEfVglkP+ozKhiqS7DZRmDQPkdazkRYDUdUilV090N9p8zx/nPkM2E0zsb8yCVdF4mqx3Fa+4nGAIkiCcLMucsyCFkUA/xDBbKreVXXadkNbgR8EN+jNopfhkzkWBAUiH5l/lgwIYIT1jj78wiROGOqcpGVgFVwu+psf22AL6yM81Sli7aV/KZ57OwyI8Z4wT1ZM7pOL+Dpe3o7Fqyj75cjVty5yt1vQCupWbbFPCNG1HunE574eJKpMGjiJ/YN7FMCnh8DTng3r6hrVpCYZCj+7zcXwJkpYXgetdYWTZjKr5wQ+MPOMMQZ11XuQ8aC5jlWoqAMuBd8MCN7Q04y/qFSVuczVCJ38FsuyfC1m2T4R5ROFQPE176jsL5nT0Cm6sO5hiYS6rWzUXzHuZ2Xt+gf+dc7cL8di/+JoLgoXSRN3EUx1wtbuA=
+    secure: aXNtu1OzJC1iTR4ZX8FTc+jzmDlTjwTMkNMvC7s9DweLgYsnfuDadTOXukrSGmQnkThcrRNel4CdQJ7mSTnRcamfgEcZwMqjHPnbrmmqLLa5GxrdghYx/0emZut3E897Qmy/DusgpnfjvN1SbdGHpMYC/DuSucS3xCA9suZpzoh4eFxXwAqoIxTSJ09uihosXMSnxRWCNLKvm+W8kKZeP1PGMy/Sv1/NV2HMDaaGK2P3i9ryM4ul9g8FxOFmAqo/OCfmGFCDBC1WrWsex1d3gz53Ic22eDiLoRQXzssOX5/e5Wx0+bUqBRN1U7ZsPFvWzNx2sAvlzaclEZA2kJkjLTWcHXeSa8uPEJREdRNzuPMXXR+vUIF3jyHbRPE+PU8Gmk6ak6WfBvncqW1dHN/sct0ui6qmBfQKEsqArahiXyV0YZEaaxoa3PH6NF/Q67lbhLJXZVymI1j1AAKbK12y/gmKqjsmW/vpb+9MKSLMgmZRlTfZfK/rCgIexoLLBiHdeuvtshoAvdMH8tRqetljlSnfD/drfc0YMqEV0RJl5GI+LDY0x+vKX0ZU1E+g72qBhZA8glNMFTEPxjJuTGV8IicsR5prq3K5w2xnwqwJ+5aD7YnYzoboX+yxbJj+cyfPOmgKbANDld/L10dNWnJOWrQUG+r2hsKcvtjbd4Te8M0=
   on:
     tags: true
     repo: dubzzz/jsverify-commands
